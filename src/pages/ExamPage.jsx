@@ -157,6 +157,8 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     if (currentIndex < questions.length - 1) {
       playSound('tap')
       goToQuestion(currentIndex + 1)
+    } else {
+      finishExam()
     }
   }
 
@@ -275,29 +277,32 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
           </motion.div>
         </AnimatePresence>
 
-        <p className="text-text-muted text-xs">
-          {t('exam.swipeHint')}
-        </p>
       </div>
 
-      <div className="no-print shrink-0 px-4 py-3 flex items-center justify-between pointer-events-none">
-        <button
-          onClick={() => goToQuestion(currentIndex - 1)}
-          disabled={currentIndex === 0}
-          className="pointer-events-auto p-3 rounded-full bg-white/80 backdrop-blur-sm text-text-light gummy-shadow disabled:opacity-30 hover:bg-white active:scale-95 transition-all"
-        >
-          <ChevronLeft size={22} />
-        </button>
+      <div className="no-print shrink-0 px-4 py-3 flex flex-col items-center gap-1">
+        <div className="w-full flex items-center justify-between pointer-events-none">
+          <button
+            onClick={() => goToQuestion(currentIndex - 1)}
+            disabled={currentIndex === 0}
+            className="pointer-events-auto p-3 rounded-full bg-white/80 backdrop-blur-sm text-text-light gummy-shadow disabled:opacity-30 hover:bg-white active:scale-95 transition-all"
+          >
+            <ChevronLeft size={22} />
+          </button>
 
-        <motion.button
-          onClick={handleNext}
-          disabled={currentIndex === questions.length - 1}
-          whileTap={{ scale: 0.95 }}
-          className="pointer-events-auto flex items-center gap-1 px-7 py-3 rounded-full bg-gradient-to-r from-secondary to-secondary-dark text-white font-bold text-lg gummy-shadow gummy-press disabled:opacity-40 transition-all"
-        >
-          {t('exam.next')}
-          <ChevronRight size={20} />
-        </motion.button>
+          <motion.button
+            onClick={handleNext}
+            whileTap={{ scale: 0.95 }}
+            className={`pointer-events-auto flex items-center gap-1 px-7 py-3 rounded-full text-white font-bold text-lg gummy-shadow gummy-press transition-all ${
+              currentIndex === questions.length - 1
+                ? 'bg-gradient-to-r from-primary to-primary-dark'
+                : 'bg-gradient-to-r from-secondary to-secondary-dark'
+            }`}
+          >
+            {currentIndex === questions.length - 1 ? t('exam.finish') : t('exam.next')}
+            <ChevronRight size={20} />
+          </motion.button>
+        </div>
+        <p className="text-text-muted text-xs">{t('exam.swipeHint')}</p>
       </div>
     </div>
   )
