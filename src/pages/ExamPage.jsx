@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLang } from '../i18n/LanguageContext'
 import { useSwipe } from '../hooks/useSwipe'
@@ -9,7 +9,7 @@ import { requestFullscreen, toggleFullscreen, isFullscreen } from '../utils/full
 import CountdownOverlay from '../components/CountdownOverlay'
 import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize } from 'lucide-react'
 
-const EXAM_DURATION_MS = 10 * 60 * 1000
+const EXAM_DURATION_SEC = 10 * 60
 
 export default function ExamPage({ levelConfig: config, user, onFinish }) {
   const { t, lang, toggleLang } = useLang()
@@ -30,40 +30,38 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
   const [currentIndex, setCurrentIndex] = useState(isResuming ? savedProgress.currentIndex : 0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [isFull, setIsFull] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(EXAM_DURATION_MS)
+  const [displaySeconds, setDisplaySeconds] = useState(EXAM_DURATION_SEC)
   const answersRef = useRef(isResuming ? (savedProgress.answers || {}) : {})
   const deadlineRef = useRef(null)
-  const timerRafRef = useRef(null)
+  const intervalRef = useRef(null)
   const finishedRef = useRef(false)
+  const saveTimeoutRef = useRef(null)
 
   function startCountdown(deadlineMs) {
     deadlineRef.current = deadlineMs
-    function tick() {
-      const remaining = deadlineRef.current - Date.now()
-      if (remaining <= 0) {
-        setTimeLeft(0)
-        if (!finishedRef.current) {
-          finishedRef.current = true
-          playSound('timeWarning')
-          finishExam()
-        }
-        return
+    intervalRef.current = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((deadlineRef.current - Date.now()) / 1000))
+      setDisplaySeconds(remaining)
+      if (remaining <= 0 && !finishedRef.current) {
+        finishedRef.current = true
+        clearInterval(intervalRef.current)
+        playSound('timeWarning')
+        finishExam()
       }
-      setTimeLeft(remaining)
-      timerRafRef.current = requestAnimationFrame(tick)
-    }
-    timerRafRef.current = requestAnimationFrame(tick)
+    }, 500)
   }
 
   useEffect(() => {
     if (isResuming && phase === 'exam') {
       const elapsedMs = (savedProgress.elapsedSeconds || 0) * 1000
-      const deadline = Date.now() + (EXAM_DURATION_MS - elapsedMs)
+      const deadline = Date.now() + (EXAM_DURATION_SEC * 1000 - elapsedMs)
+      setDisplaySeconds(Math.max(0, Math.floor((deadline - Date.now()) / 1000)))
       startCountdown(deadline)
       setSelectedAnswer(answersRef.current[questions[currentIndex]?.id] ?? null)
     }
     return () => {
-      if (timerRafRef.current) cancelAnimationFrame(timerRafRef.current)
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
     }
   }, [])
 
@@ -80,22 +78,26 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
   function getElapsedSeconds() {
     if (!deadlineRef.current) return 0
     const remaining = deadlineRef.current - Date.now()
-    return Math.round((EXAM_DURATION_MS - Math.max(0, remaining)) / 1000)
+    return Math.round((EXAM_DURATION_SEC * 1000 - Math.max(0, remaining)) / 1000)
   }
 
-  function persistProgress() {
-    saveExamProgress({
-      level: config.level,
-      user,
-      questions,
-      answers: { ...answersRef.current },
-      currentIndex,
-      elapsedSeconds: getElapsedSeconds(),
-    })
+  function debouncedSave() {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    saveTimeoutRef.current = setTimeout(() => {
+      saveExamProgress({
+        level: config.level,
+        user: { name: user?.name, code: user?.code },
+        questions,
+        answers: { ...answersRef.current },
+        currentIndex,
+        elapsedSeconds: getElapsedSeconds(),
+      })
+    }, 1000)
   }
 
   function finishExam() {
-    if (timerRafRef.current) cancelAnimationFrame(timerRafRef.current)
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
     clearExamProgress()
     const elapsed = getElapsedSeconds()
     const results = questions.map((q) => ({
@@ -111,7 +113,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     const wrong = results.filter((r) => !r.isCorrect && !r.isSkipped).length
     const skipped = results.filter((r) => r.isSkipped).length
 
-    const examData = {
+    saveExamAnswers({
       user,
       level: config.level,
       totalQuestions: questions.length,
@@ -119,23 +121,33 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
       wrong,
       skipped,
       timeTaken: elapsed,
-      totalTime: EXAM_DURATION_MS / 1000,
+      totalTime: EXAM_DURATION_SEC,
       score: correct,
       accuracy: questions.length > 0 ? Math.round((correct / questions.length) * 100) : 0,
       results,
       completedAt: Date.now(),
-    }
+    })
 
-    saveExamAnswers(examData)
     playSound('complete')
-    onFinish(examData)
+    onFinish({
+      user,
+      level: config.level,
+      totalQuestions: questions.length,
+      correct,
+      wrong,
+      skipped,
+      timeTaken: elapsed,
+      totalTime: EXAM_DURATION_SEC,
+      score: correct,
+      accuracy: questions.length > 0 ? Math.round((correct / questions.length) * 100) : 0,
+    })
   }
 
   function goToQuestion(index) {
     if (index < 0 || index >= questions.length) return
-    persistProgress()
     setSelectedAnswer(answersRef.current[questions[index].id] ?? null)
     setCurrentIndex(index)
+    debouncedSave()
   }
 
   function handleNext() {
@@ -159,12 +171,13 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     playSound('select')
     setSelectedAnswer(choice)
     answersRef.current[currentQuestion.id] = choice
-    persistProgress()
+    debouncedSave()
   }
 
   function handleCountdownComplete() {
     setPhase('exam')
-    const deadline = Date.now() + EXAM_DURATION_MS
+    const deadline = Date.now() + EXAM_DURATION_SEC * 1000
+    setDisplaySeconds(EXAM_DURATION_SEC)
     startCountdown(deadline)
     requestFullscreen()
   }
@@ -172,14 +185,10 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
   const swipeHandlers = useSwipe(handleSkip, null, 60)
 
   const currentQuestion = questions[currentIndex]
-  const answeredCount = Object.keys(answersRef.current).length
-
-  const totalSec = Math.ceil(timeLeft / 1000)
-  const minutes = Math.floor(totalSec / 60)
-  const seconds = totalSec % 60
-  const isTimeWarning = totalSec <= 60
-  const isTimeCritical = totalSec <= 30
-
+  const minutes = Math.floor(displaySeconds / 60)
+  const seconds = displaySeconds % 60
+  const isTimeWarning = displaySeconds <= 60
+  const isTimeCritical = displaySeconds <= 30
   const questionProgress = ((currentIndex + 1) / questions.length) * 100
 
   if (phase === 'countdown') {
@@ -188,7 +197,6 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden" {...swipeHandlers}>
-      {/* Header: logo, question counter, timer, controls */}
       <div className="no-print shrink-0 px-3 py-2 bg-white/90 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
@@ -217,7 +225,6 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             </button>
           </div>
         </div>
-        {/* Question progress bar - fills as you advance through questions */}
         <div className="w-full h-2 bg-bg rounded-full overflow-hidden">
           <div
             className="h-full rounded-full bg-secondary transition-all duration-300"
@@ -226,7 +233,6 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
         </div>
       </div>
 
-      {/* Question Area */}
       <div className="flex-1 flex flex-col items-center justify-center p-4 gap-3 overflow-auto">
         <AnimatePresence mode="wait">
           <motion.div
@@ -274,7 +280,6 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
         </p>
       </div>
 
-      {/* Floating Bottom Navigation */}
       <div className="no-print shrink-0 px-4 py-3 flex items-center justify-between pointer-events-none">
         <button
           onClick={() => goToQuestion(currentIndex - 1)}
