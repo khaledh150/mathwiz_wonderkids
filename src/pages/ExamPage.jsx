@@ -198,36 +198,36 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden" {...swipeHandlers}>
-      <div className="no-print shrink-0 px-3 py-2 bg-white/90 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between mb-1.5">
+    <div className="h-dvh flex flex-col overflow-hidden" {...swipeHandlers}>
+      <div className="no-print shrink-0 px-3 py-1.5 bg-white/90 backdrop-blur-sm border-b border-border">
+        <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
-            <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-7 w-auto" />
-            <span className="text-sm font-medium text-text-light">
-              {t('exam.question')} {currentIndex + 1} {t('exam.of')} {questions.length}
+            <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-6 w-auto" />
+            <span className="text-xs font-medium text-text-light">
+              {currentIndex + 1} / {questions.length}
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className={`flex items-center gap-1 font-bold text-lg tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
-              <Clock size={18} />
+          <div className="flex items-center gap-1.5">
+            <div className={`flex items-center gap-1 font-bold text-base tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
+              <Clock size={16} />
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
             <button
               onClick={toggleLang}
-              className="flex items-center gap-1 px-2 py-1 rounded-full bg-purple/10 text-purple font-semibold text-xs"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-purple/10 text-purple font-semibold text-xs"
             >
-              <Globe size={14} />
+              <Globe size={12} />
               {lang === 'en' ? 'TH' : 'EN'}
             </button>
             <button
               onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
-              className="p-1.5 rounded-full bg-secondary/10 text-secondary"
+              className="p-1 rounded-full bg-secondary/10 text-secondary"
             >
-              {isFull ? <Minimize size={16} /> : <Maximize size={16} />}
+              {isFull ? <Minimize size={14} /> : <Maximize size={14} />}
             </button>
           </div>
         </div>
-        <div className="w-full h-2 bg-bg rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-bg rounded-full overflow-hidden">
           <div
             className="h-full rounded-full bg-secondary transition-all duration-300"
             style={{ width: `${questionProgress}%` }}
@@ -235,7 +235,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-4 gap-3 overflow-auto">
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-2 sm:p-4 gap-1">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.id}
@@ -245,13 +245,13 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             transition={{ duration: 0.25 }}
             className="w-full max-w-xl"
           >
-            <div className="bg-white rounded-3xl p-5 sm:p-7 gummy-shadow-lg mb-3 text-center">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text leading-relaxed break-words">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 lg:p-7 gummy-shadow-lg mb-2 sm:mb-3 text-center">
+              <p className="text-2xl sm:text-3xl lg:text-5xl font-bold text-text leading-snug break-words">
                 {lang === 'en' && currentQuestion.questionEn ? currentQuestion.questionEn : currentQuestion.question}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {currentQuestion.choices.map((choice, i) => {
                 const isSelected = selectedAnswer === choice
                 const labels = ['A', 'B', 'C', 'D']
@@ -260,13 +260,13 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
                     key={`${currentQuestion.id}-${choice}-${i}`}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectAnswer(choice)}
-                    className={`relative p-4 sm:p-5 rounded-2xl font-bold text-xl sm:text-2xl transition-all gummy-press ${
+                    className={`relative p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl transition-all gummy-press ${
                       isSelected
                         ? 'bg-primary text-white gummy-shadow-lg scale-[1.03]'
                         : 'bg-white text-text gummy-shadow hover:bg-bg'
                     }`}
                   >
-                    <span className={`absolute top-2 left-3 text-xs font-bold ${isSelected ? 'text-white/60' : 'text-text-muted'}`}>
+                    <span className={`absolute top-1 left-2 text-[10px] sm:text-xs font-bold ${isSelected ? 'text-white/60' : 'text-text-muted'}`}>
                       {labels[i]}
                     </span>
                     {choice}
@@ -276,33 +276,33 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             </div>
           </motion.div>
         </AnimatePresence>
-
       </div>
 
-      <div className="no-print shrink-0 px-4 py-3 flex flex-col items-center gap-1">
-        <div className="w-full flex items-center justify-between pointer-events-none">
+      <div className="no-print shrink-0 px-3 py-2 sm:py-3">
+        <div className="w-full flex items-center justify-between">
           <button
             onClick={() => goToQuestion(currentIndex - 1)}
             disabled={currentIndex === 0}
-            className="pointer-events-auto p-3 rounded-full bg-white/80 backdrop-blur-sm text-text-light gummy-shadow disabled:opacity-30 hover:bg-white active:scale-95 transition-all"
+            className="p-2.5 sm:p-3 rounded-full bg-white/80 backdrop-blur-sm text-text-light gummy-shadow disabled:opacity-30 hover:bg-white active:scale-95 transition-all"
           >
-            <ChevronLeft size={22} />
+            <ChevronLeft size={20} />
           </button>
+
+          <p className="text-text-muted text-[10px] sm:text-xs">{t('exam.swipeHint')}</p>
 
           <motion.button
             onClick={handleNext}
             whileTap={{ scale: 0.95 }}
-            className={`pointer-events-auto flex items-center gap-1 px-7 py-3 rounded-full text-white font-bold text-lg gummy-shadow gummy-press transition-all ${
+            className={`flex items-center gap-1 px-5 sm:px-7 py-2.5 sm:py-3 rounded-full text-white font-bold text-base sm:text-lg gummy-shadow gummy-press transition-all ${
               currentIndex === questions.length - 1
                 ? 'bg-gradient-to-r from-primary to-primary-dark'
                 : 'bg-gradient-to-r from-secondary to-secondary-dark'
             }`}
           >
             {currentIndex === questions.length - 1 ? t('exam.finish') : t('exam.next')}
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </motion.button>
         </div>
-        <p className="text-text-muted text-xs">{t('exam.swipeHint')}</p>
       </div>
     </div>
   )
