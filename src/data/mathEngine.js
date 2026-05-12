@@ -16,13 +16,15 @@ export function generateExam(level, questionCount = 100) {
 
   return selected.map((q, i) => {
     const choices = shuffle([q.answer, ...q.distractors])
-    return {
+    const out = {
       id: i + 1,
       question: q.question,
       choices,
       correctAnswer: q.answer,
       selectedAnswer: null,
     }
+    if (q.questionEn) out.questionEn = q.questionEn
+    return out
   })
 }
 

@@ -36,16 +36,15 @@ export default function Header({ showControls = true, minimal = false }) {
         <div className="flex items-center gap-2">
           <button
             onClick={toggleLang}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple/10 text-purple font-semibold text-sm hover:bg-purple/20 active:scale-95 transition-all"
+            className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple"
             aria-label="Toggle language"
           >
-            <Globe size={16} />
-            <span>{lang === 'en' ? 'TH' : 'EN'}</span>
+            <Globe size={18} />
           </button>
 
           <button
             onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
-            className="p-2 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 active:scale-95 transition-all"
+            className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-secondary"
             aria-label="Toggle fullscreen"
           >
             {isFull ? <Minimize size={18} /> : <Maximize size={18} />}

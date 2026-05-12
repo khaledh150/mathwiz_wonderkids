@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLang } from '../i18n/LanguageContext'
 import { generateExam, levelConfig } from '../data/mathEngine'
+import { renderQuestion } from '../utils/fractionRenderer'
 import { ArrowLeft, Printer, Key } from 'lucide-react'
 
 export default function PrintExamPage({ onBack }) {
@@ -91,7 +92,7 @@ export default function PrintExamPage({ onBack }) {
             <div key={q.id} className="flex gap-3 items-start">
               <span className="font-bold min-w-[2rem] text-right">{i + 1}.</span>
               <div className="flex-1">
-                <p className="font-bold text-lg mb-1">{lang === 'en' && q.questionEn ? q.questionEn : q.question}</p>
+                <p className="font-bold text-lg mb-1">{renderQuestion(lang === 'en' && q.questionEn ? q.questionEn : q.question)}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {q.choices.map((choice, ci) => (
                     <span key={ci} className="text-sm">

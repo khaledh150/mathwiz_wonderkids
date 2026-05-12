@@ -5,9 +5,9 @@ import { useSwipe } from '../hooks/useSwipe'
 import { generateExam } from '../data/mathEngine'
 import { playSound } from '../utils/sound'
 import { saveExamAnswers, saveExamProgress, getExamProgress, clearExamProgress } from '../utils/storage'
-import { toggleFullscreen, isFullscreen } from '../utils/fullscreen'
+import { toggleFullscreen, isFullscreen, exitFullscreen } from '../utils/fullscreen'
+import { renderQuestion } from '../utils/fractionRenderer'
 import CountdownOverlay from '../components/CountdownOverlay'
-import { exitFullscreen } from '../utils/fullscreen'
 import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize, LogOut } from 'lucide-react'
 
 const EXAM_DURATION_SEC = 10 * 60
@@ -210,7 +210,10 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
     <div className="h-screen-safe flex flex-col overflow-hidden" {...swipeHandlers}>
       <div className="no-print shrink-0 flex items-center gap-2 px-3 py-1.5">
         <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-7 w-auto shrink-0" />
-        <div className="flex-1 h-2 bg-bg rounded-full overflow-hidden">
+        <span className="shrink-0 font-bold text-sm text-text">
+          {t('levels.level')} {config.level}
+        </span>
+        <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
           <div
             className="h-full rounded-full bg-secondary transition-all duration-300"
             style={{ width: `${questionProgress}%` }}
@@ -258,7 +261,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
           >
             <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 lg:p-7 gummy-shadow-lg mb-2 sm:mb-3 text-center">
               <p className="text-2xl sm:text-3xl lg:text-5xl font-bold text-text leading-snug break-words">
-                {lang === 'en' && currentQuestion.questionEn ? currentQuestion.questionEn : currentQuestion.question}
+                {renderQuestion(lang === 'en' && currentQuestion.questionEn ? currentQuestion.questionEn : currentQuestion.question)}
               </p>
             </div>
 
