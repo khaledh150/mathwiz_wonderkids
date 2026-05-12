@@ -209,44 +209,39 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
   return (
     <div className="h-screen-safe flex flex-col overflow-hidden" {...swipeHandlers}>
       <div className="no-print shrink-0 px-3 py-1.5 bg-white/90 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-6 w-auto" />
-            <span className="text-xs font-medium text-text-light">
-              {currentIndex + 1} / {questions.length}
-            </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-text-light whitespace-nowrap">
+            Q {currentIndex + 1} / {questions.length}
+          </span>
+          <div className="flex-1 h-2 bg-bg rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full bg-secondary transition-all duration-300"
+              style={{ width: `${questionProgress}%` }}
+            />
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className={`flex items-center gap-1 font-bold text-base tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
-              <Clock size={16} />
-              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-            </div>
-            <button
-              onClick={toggleLang}
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-purple/10 text-purple font-semibold text-xs"
-            >
-              <Globe size={12} />
-              {lang === 'en' ? 'TH' : 'EN'}
-            </button>
-            <button
-              onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
-              className="p-1 rounded-full bg-secondary/10 text-secondary"
-            >
-              {isFull ? <Minimize size={14} /> : <Maximize size={14} />}
-            </button>
-            <button
-              onClick={handleExit}
-              className="p-1 rounded-full bg-red/10 text-red"
-            >
-              <LogOut size={14} />
-            </button>
+          <div className={`flex items-center gap-1 font-bold text-lg tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
+            <Clock size={18} />
+            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
           </div>
-        </div>
-        <div className="w-full h-1.5 bg-bg rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full bg-secondary transition-all duration-300"
-            style={{ width: `${questionProgress}%` }}
-          />
+          <button
+            onClick={toggleLang}
+            className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-purple/10 text-purple font-semibold text-xs"
+          >
+            <Globe size={12} />
+            {lang === 'en' ? 'TH' : 'EN'}
+          </button>
+          <button
+            onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
+            className="p-1 rounded-full bg-secondary/10 text-secondary"
+          >
+            {isFull ? <Minimize size={14} /> : <Maximize size={14} />}
+          </button>
+          <button
+            onClick={handleExit}
+            className="p-1 rounded-full bg-red/10 text-red"
+          >
+            <LogOut size={14} />
+          </button>
         </div>
       </div>
 
@@ -266,7 +261,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               {currentQuestion.choices.map((choice, i) => {
                 const isSelected = selectedAnswer === choice
                 const labels = ['A', 'B', 'C', 'D']
@@ -275,13 +270,13 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
                     key={`${currentQuestion.id}-${choice}-${i}`}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectAnswer(choice)}
-                    className={`relative p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl transition-all gummy-press ${
+                    className={`relative p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl font-bold text-xl sm:text-2xl lg:text-3xl transition-all gummy-press ${
                       isSelected
                         ? 'bg-primary text-white gummy-shadow-lg scale-[1.03]'
                         : 'bg-white text-text gummy-shadow hover:bg-bg'
                     }`}
                   >
-                    <span className={`absolute top-1 left-2 text-[10px] sm:text-xs font-bold ${isSelected ? 'text-white/60' : 'text-text-muted'}`}>
+                    <span className={`absolute top-1.5 left-2.5 text-xs sm:text-sm font-bold ${isSelected ? 'text-white/60' : 'text-text-muted'}`}>
                       {labels[i]}
                     </span>
                     {choice}
