@@ -6,26 +6,25 @@ import { useSwipe } from '../hooks/useSwipe'
 import { generateExam } from '../data/mathEngine'
 import { playSound } from '../utils/sound'
 import { saveExamAnswers, saveExamProgress, getExamProgress, clearExamProgress } from '../utils/storage'
-import { requestFullscreen } from '../utils/fullscreen'
+import { requestFullscreen, toggleFullscreen, isFullscreen } from '../utils/fullscreen'
 import CountdownOverlay from '../components/CountdownOverlay'
-import { Clock, ChevronRight, ChevronLeft, Flag, AlertTriangle } from 'lucide-react'
+import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize } from 'lucide-react'
 
 export default function ExamPage({ levelConfig: config, user, onFinish }) {
-  const { t } = useLang()
+  const { t, lang, toggleLang } = useLang()
 
   const savedProgress = getExamProgress()
   const isResuming = savedProgress && savedProgress.level === config.level && savedProgress.user?.name === user?.name
 
   const [phase, setPhase] = useState(isResuming ? 'exam' : 'countdown')
-  const [questions, setQuestions] = useState(() => {
+  const [questions] = useState(() => {
     if (isResuming) return savedProgress.questions
     return generateExam(config.level, config.questions)
   })
   const [currentIndex, setCurrentIndex] = useState(isResuming ? savedProgress.currentIndex : 0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
-  const [showConfirmFinish, setShowConfirmFinish] = useState(false)
+  const [isFull, setIsFull] = useState(false)
   const answersRef = useRef(isResuming ? (savedProgress.answers || {}) : {})
-  const startTimeRef = useRef(null)
 
   const resumedElapsed = isResuming ? (savedProgress.elapsedSeconds || 0) : 0
   const totalSeconds = config.timeMinutes * 60
@@ -36,19 +35,27 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     finishExam()
   }, [])
 
-  const { timeLeft, isRunning, start: startTimer, stop: stopTimer, getElapsedSeconds } = useTimer(
+  const { timeLeft, start: startTimer, stop: stopTimer, getElapsedSeconds } = useTimer(
     isResuming ? remainingOnResume : totalSeconds,
     handleTimeUp
   )
 
   const currentQuestion = questions[currentIndex]
-  const answeredCount = Object.keys(answersRef.current).length
 
   useEffect(() => {
     if (isResuming && phase === 'exam') {
-      startTimeRef.current = Date.now() - resumedElapsed * 1000
       startTimer()
       setSelectedAnswer(answersRef.current[questions[currentIndex]?.id] ?? null)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handler = () => setIsFull(isFullscreen())
+    document.addEventListener('fullscreenchange', handler)
+    document.addEventListener('webkitfullscreenchange', handler)
+    return () => {
+      document.removeEventListener('fullscreenchange', handler)
+      document.removeEventListener('webkitfullscreenchange', handler)
     }
   }, [])
 
@@ -61,7 +68,6 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
       answers: { ...answersRef.current },
       currentIndex,
       elapsedSeconds: elapsed,
-      startedAt: startTimeRef.current,
     })
   }
 
@@ -113,15 +119,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     if (selectedAnswer !== null) {
       answersRef.current[currentQuestion.id] = selectedAnswer
     }
-
-    const isLast = currentIndex === questions.length - 1
-    if (isLast) {
-      if (answeredCount < questions.length) {
-        setShowConfirmFinish(true)
-      } else {
-        finishExam()
-      }
-    } else {
+    if (currentIndex < questions.length - 1) {
       playSound('tap')
       goToQuestion(currentIndex + 1)
     }
@@ -129,10 +127,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   function handleSkip() {
     playSound('swipe')
-    const isLast = currentIndex === questions.length - 1
-    if (isLast) {
-      setShowConfirmFinish(true)
-    } else {
+    if (currentIndex < questions.length - 1) {
       goToQuestion(currentIndex + 1)
     }
   }
@@ -146,7 +141,6 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   function handleCountdownComplete() {
     setPhase('exam')
-    startTimeRef.current = Date.now()
     startTimer()
     requestFullscreen()
   }
@@ -165,15 +159,33 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden" {...swipeHandlers}>
-      {/* Timer Bar */}
+      {/* Single Header with logo, progress, timer, controls */}
       <div className="no-print shrink-0 px-3 py-2 bg-white/90 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-sm font-medium text-text-light">
-            {t('exam.question')} {currentIndex + 1} {t('exam.of')} {questions.length}
-          </span>
-          <div className={`flex items-center gap-1 font-bold text-lg ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
-            <Clock size={18} />
-            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          <div className="flex items-center gap-2">
+            <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-7 w-auto" />
+            <span className="text-sm font-medium text-text-light">
+              {t('exam.question')} {currentIndex + 1} {t('exam.of')} {questions.length}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-1 font-bold text-lg ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
+              <Clock size={18} />
+              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+            </div>
+            <button
+              onClick={toggleLang}
+              className="flex items-center gap-1 px-2 py-1 rounded-full bg-purple/10 text-purple font-semibold text-xs"
+            >
+              <Globe size={14} />
+              {lang === 'en' ? 'TH' : 'EN'}
+            </button>
+            <button
+              onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
+              className="p-1.5 rounded-full bg-secondary/10 text-secondary"
+            >
+              {isFull ? <Minimize size={16} /> : <Maximize size={16} />}
+            </button>
           </div>
         </div>
         <div className="w-full h-2 bg-bg rounded-full overflow-hidden">
@@ -183,31 +195,10 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             transition={{ duration: 0.3 }}
           />
         </div>
-        {/* Question dots - scrollable for 100 questions */}
-        <div className="flex gap-0.5 mt-2 justify-start overflow-x-auto pb-1 scrollbar-hide">
-          {questions.map((q, i) => {
-            const answered = answersRef.current[q.id] !== undefined
-            return (
-              <button
-                key={q.id}
-                onClick={() => goToQuestion(i)}
-                className={`w-5 h-5 min-w-5 rounded-full text-[10px] font-bold transition-all ${
-                  i === currentIndex
-                    ? 'bg-primary text-white scale-110'
-                    : answered
-                    ? 'bg-secondary/20 text-secondary'
-                    : 'bg-bg text-text-muted'
-                }`}
-              >
-                {i + 1}
-              </button>
-            )
-          })}
-        </div>
       </div>
 
       {/* Question Area */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 gap-4 overflow-auto">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 gap-3 overflow-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.id}
@@ -218,7 +209,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             className="w-full max-w-xl"
           >
             {/* Question */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 gummy-shadow-lg mb-4 text-center">
+            <div className="bg-white rounded-3xl p-5 sm:p-7 gummy-shadow-lg mb-3 text-center">
               <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text leading-relaxed break-words">
                 {currentQuestion.question}
               </p>
@@ -256,77 +247,26 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
         </p>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="no-print shrink-0 px-4 py-3 bg-white/90 backdrop-blur-sm border-t border-border flex items-center justify-between gap-3">
+      {/* Floating Bottom Navigation */}
+      <div className="no-print shrink-0 px-4 py-3 flex items-center justify-between pointer-events-none">
         <button
           onClick={() => goToQuestion(currentIndex - 1)}
           disabled={currentIndex === 0}
-          className="flex items-center gap-1 px-4 py-2.5 rounded-xl text-text-light font-medium disabled:opacity-30 hover:bg-bg active:scale-95 transition-all"
+          className="pointer-events-auto p-3 rounded-full bg-white/80 backdrop-blur-sm text-text-light gummy-shadow disabled:opacity-30 hover:bg-white active:scale-95 transition-all"
         >
-          <ChevronLeft size={18} />
-        </button>
-
-        <button
-          onClick={() => setShowConfirmFinish(true)}
-          className="flex items-center gap-1 px-4 py-2.5 rounded-xl text-orange font-medium hover:bg-orange/10 active:scale-95 transition-all"
-        >
-          <Flag size={16} />
-          {t('exam.finish')}
+          <ChevronLeft size={22} />
         </button>
 
         <motion.button
           onClick={handleNext}
+          disabled={currentIndex === questions.length - 1}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-1 px-6 py-2.5 rounded-xl bg-gradient-to-r from-secondary to-secondary-dark text-white font-bold gummy-shadow gummy-press transition-all"
+          className="pointer-events-auto flex items-center gap-1 px-7 py-3 rounded-full bg-gradient-to-r from-secondary to-secondary-dark text-white font-bold text-lg gummy-shadow gummy-press disabled:opacity-40 transition-all"
         >
-          {currentIndex === questions.length - 1 ? t('exam.finish') : t('exam.next')}
-          <ChevronRight size={18} />
+          {t('exam.next')}
+          <ChevronRight size={20} />
         </motion.button>
       </div>
-
-      {/* Confirm Finish Modal */}
-      <AnimatePresence>
-        {showConfirmFinish && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-text/60 backdrop-blur-sm p-4"
-            onClick={() => setShowConfirmFinish(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl p-6 max-w-sm w-full gummy-shadow-lg text-center"
-            >
-              <AlertTriangle size={40} className="text-orange mx-auto mb-3" />
-              <p className="text-text font-bold text-lg mb-1">{t('exam.finish')}?</p>
-              <p className="text-text-light text-sm mb-4">
-                {t('exam.confirmFinish')}
-              </p>
-              <p className="text-sm text-text-muted mb-4">
-                {answeredCount}/{questions.length} {t('levels.questions')}
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowConfirmFinish(false)}
-                  className="flex-1 py-3 rounded-xl bg-bg text-text font-medium active:scale-95 transition-all"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={() => { setShowConfirmFinish(false); finishExam() }}
-                  className="flex-1 py-3 rounded-xl bg-primary text-white font-bold active:scale-95 transition-all"
-                >
-                  {t('common.confirm')}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

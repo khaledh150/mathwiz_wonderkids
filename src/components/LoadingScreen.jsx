@@ -9,7 +9,7 @@ export default function LoadingScreen({ message }) {
       <motion.img
         src="/wonderkids_logo.webp"
         alt="WonderKids"
-        className="h-20 w-auto mb-6"
+        className="h-60 w-auto mb-6"
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       />

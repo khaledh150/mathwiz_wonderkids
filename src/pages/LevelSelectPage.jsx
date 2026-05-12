@@ -19,9 +19,6 @@ export default function LevelSelectPage({ user, onSelectLevel, onPrint }) {
           <h1 className="text-2xl sm:text-3xl font-bold text-text mb-1">
             {t('levels.title')}
           </h1>
-          <p className="text-text-light">
-            {t('levels.subtitle')}
-          </p>
           {user && (
             <p className="text-sm text-text-muted mt-1">
               {t('welcome.registeredAs')}: <strong className="text-primary">{user.name}</strong>

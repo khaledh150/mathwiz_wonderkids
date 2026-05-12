@@ -74,12 +74,10 @@ function AppContent() {
   }
 
   const showHeader = page !== PAGES.LOADING && page !== PAGES.EXAM
-  const showMinimalHeader = page === PAGES.EXAM
 
   return (
     <div className="min-h-dvh flex flex-col bg-bg">
       {showHeader && <Header />}
-      {showMinimalHeader && <Header showControls={false} minimal />}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -117,7 +115,6 @@ function AppContent() {
             <ResultsPage
               examData={examResults}
               onTryAgain={handleTryAgain}
-              onBackToLevels={() => setPage(PAGES.LEVELS)}
               onBackToHome={() => { setUser(null); setPage(PAGES.WELCOME) }}
             />
           )}

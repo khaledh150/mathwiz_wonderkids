@@ -1,50 +1,57 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 
-export function useTimer(totalSeconds, onTimeUp) {
-  const [timeLeft, setTimeLeft] = useState(totalSeconds)
+export function useTimer(durationSeconds, onTimeUp) {
+  const [timeLeft, setTimeLeft] = useState(durationSeconds)
   const [isRunning, setIsRunning] = useState(false)
-  const intervalRef = useRef(null)
-  const startTimeRef = useRef(null)
+  const rafRef = useRef(null)
+  const startWallTime = useRef(null)
   const onTimeUpRef = useRef(onTimeUp)
+  const firedRef = useRef(false)
 
   onTimeUpRef.current = onTimeUp
 
   const start = useCallback(() => {
-    startTimeRef.current = Date.now()
+    startWallTime.current = Date.now()
+    firedRef.current = false
     setIsRunning(true)
   }, [])
 
   const stop = useCallback(() => {
     setIsRunning(false)
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
     }
   }, [])
 
   const getElapsedSeconds = useCallback(() => {
-    if (!startTimeRef.current) return 0
-    return Math.floor((Date.now() - startTimeRef.current) / 1000)
+    if (!startWallTime.current) return 0
+    return Math.round((Date.now() - startWallTime.current) / 1000)
   }, [])
 
   useEffect(() => {
     if (!isRunning) return
 
-    intervalRef.current = setInterval(() => {
-      const elapsed = getElapsedSeconds()
-      const remaining = Math.max(0, totalSeconds - elapsed)
-      setTimeLeft(remaining)
+    function tick() {
+      const elapsed = (Date.now() - startWallTime.current) / 1000
+      const remaining = Math.max(0, durationSeconds - elapsed)
+      setTimeLeft(Math.ceil(remaining))
 
-      if (remaining <= 0) {
+      if (remaining <= 0 && !firedRef.current) {
+        firedRef.current = true
         stop()
         onTimeUpRef.current?.()
+        return
       }
-    }, 250)
+      rafRef.current = requestAnimationFrame(tick)
+    }
+
+    rafRef.current = requestAnimationFrame(tick)
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
-  }, [isRunning, totalSeconds, getElapsedSeconds, stop])
+  }, [isRunning, durationSeconds, stop])
 
   return { timeLeft, isRunning, start, stop, getElapsedSeconds }
 }
