@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useLang } from '../i18n/LanguageContext'
 import { fireConfettiBurst } from '../utils/confetti'
-import { CheckCircle, XCircle, MinusCircle, Clock, Target, RotateCcw, Home } from 'lucide-react'
+import { CheckCircle, XCircle, MinusCircle, Clock, Target, Home } from 'lucide-react'
 
 function getGrade(accuracy, t) {
   if (accuracy === 100) return { text: t('results.perfect'), color: 'text-gold' }
@@ -12,7 +12,7 @@ function getGrade(accuracy, t) {
   return { text: t('results.keepTrying'), color: 'text-primary' }
 }
 
-export default function ResultsPage({ examData, onTryAgain, onBackToHome }) {
+export default function ResultsPage({ examData, onBackToHome }) {
   const { t } = useLang()
   const { correct, wrong, skipped, totalQuestions, timeTaken, accuracy } = examData
   const grade = getGrade(accuracy, t)
@@ -78,22 +78,14 @@ export default function ResultsPage({ examData, onTryAgain, onBackToHome }) {
               </div>
             </div>
 
-            <div className="flex gap-2 mt-3">
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                onClick={onTryAgain}
-                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-primary to-primary-dark text-white font-bold gummy-shadow gummy-press"
-              >
-                <RotateCcw size={18} />
-                {t('results.tryAgain')}
-              </motion.button>
-              <button
-                onClick={onBackToHome}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-text font-medium gummy-shadow gummy-press"
-              >
-                <Home size={18} />
-              </button>
-            </div>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={onBackToHome}
+              className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-primary to-primary-dark text-white font-bold gummy-shadow gummy-press"
+            >
+              <Home size={18} />
+              {t('results.backToHome')}
+            </motion.button>
           </div>
         </div>
       </motion.div>

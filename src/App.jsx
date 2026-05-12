@@ -69,9 +69,6 @@ function AppContent() {
     setPage(PAGES.RESULTS)
   }
 
-  function handleTryAgain() {
-    setPage(PAGES.EXAM)
-  }
 
   const showHeader = page !== PAGES.LOADING && page !== PAGES.EXAM
 
@@ -114,7 +111,6 @@ function AppContent() {
           {page === PAGES.RESULTS && examResults && (
             <ResultsPage
               examData={examResults}
-              onTryAgain={handleTryAgain}
               onBackToHome={() => { setUser(null); setPage(PAGES.WELCOME) }}
             />
           )}
