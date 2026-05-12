@@ -14,7 +14,12 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
   const { t, lang, toggleLang } = useLang()
 
   const savedProgress = getExamProgress()
-  const isResuming = savedProgress && savedProgress.level === config.level && savedProgress.user?.name === user?.name
+  const isResuming = savedProgress
+    && savedProgress.level === config.level
+    && savedProgress.user?.name === user?.name
+    && savedProgress.questions?.length === config.questions
+
+  if (savedProgress && !isResuming) clearExamProgress()
 
   const [phase, setPhase] = useState(isResuming ? 'exam' : 'countdown')
   const [questions] = useState(() => {
