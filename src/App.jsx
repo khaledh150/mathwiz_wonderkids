@@ -105,6 +105,7 @@ function AppContent() {
               levelConfig={selectedLevel}
               user={user}
               onFinish={handleExamFinish}
+              onExit={() => setPage(PAGES.LEVELS)}
             />
           )}
 

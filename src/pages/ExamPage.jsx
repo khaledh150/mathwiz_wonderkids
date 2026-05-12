@@ -7,11 +7,12 @@ import { playSound } from '../utils/sound'
 import { saveExamAnswers, saveExamProgress, getExamProgress, clearExamProgress } from '../utils/storage'
 import { toggleFullscreen, isFullscreen } from '../utils/fullscreen'
 import CountdownOverlay from '../components/CountdownOverlay'
-import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize } from 'lucide-react'
+import { exitFullscreen } from '../utils/fullscreen'
+import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize, LogOut } from 'lucide-react'
 
 const EXAM_DURATION_SEC = 10 * 60
 
-export default function ExamPage({ levelConfig: config, user, onFinish }) {
+export default function ExamPage({ levelConfig: config, user, onFinish, onExit }) {
   const { t, lang, toggleLang } = useLang()
 
   const savedProgress = getExamProgress()
@@ -183,6 +184,15 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     startCountdown(deadline)
   }
 
+  function handleExit() {
+    if (!confirm(t('exam.confirmExit'))) return
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    clearExamProgress()
+    exitFullscreen()
+    onExit()
+  }
+
   const swipeHandlers = useSwipe(handleSkip, null, 60)
 
   const currentQuestion = questions[currentIndex]
@@ -223,6 +233,12 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
               className="p-1 rounded-full bg-secondary/10 text-secondary"
             >
               {isFull ? <Minimize size={14} /> : <Maximize size={14} />}
+            </button>
+            <button
+              onClick={handleExit}
+              className="p-1 rounded-full bg-red/10 text-red"
+            >
+              <LogOut size={14} />
             </button>
           </div>
         </div>

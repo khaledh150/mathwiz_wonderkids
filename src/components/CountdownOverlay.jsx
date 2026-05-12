@@ -1,17 +1,17 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
-import { useLang } from '../i18n/LanguageContext'
+import { useState, useEffect, useCallback } from 'react'
 import { playSound } from '../utils/sound'
 
 const STEPS = ['ready', '3', '2', '1', 'go']
 
 export default function CountdownOverlay({ onComplete }) {
-  const { t } = useLang()
   const [step, setStep] = useState(0)
+
+  const stableComplete = useCallback(onComplete, [])
 
   useEffect(() => {
     if (step >= STEPS.length) {
-      onComplete()
+      stableComplete()
       return
     }
 
@@ -25,18 +25,18 @@ export default function CountdownOverlay({ onComplete }) {
     const delay = current === 'ready' ? 1200 : current === 'go' ? 800 : 1000
     const timer = setTimeout(() => setStep(step + 1), delay)
     return () => clearTimeout(timer)
-  }, [step, onComplete])
+  }, [step, stableComplete])
 
   const current = STEPS[step]
   if (step >= STEPS.length) return null
 
   const display =
-    current === 'ready' ? t('exam.ready') :
-    current === 'go' ? t('exam.go') :
+    current === 'ready' ? 'Get Ready' :
+    current === 'go' ? 'GO!' :
     current
 
   const colors = {
-    ready: 'text-purple',
+    ready: 'text-white',
     3: 'text-primary',
     2: 'text-orange',
     1: 'text-red',
@@ -52,7 +52,7 @@ export default function CountdownOverlay({ onComplete }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 2, opacity: 0 }}
           transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
-          className={`text-[min(30vw,12rem)] font-bold ${colors[current]} drop-shadow-lg`}
+          className={`font-bold ${colors[current]} countdown-stroke ${current === 'ready' ? 'text-[min(12vw,5rem)]' : 'text-[min(30vw,12rem)]'}`}
         >
           {display}
         </motion.div>

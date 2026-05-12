@@ -79,6 +79,12 @@ input, textarea, select {
   }
 }
 
+.countdown-stroke {
+  -webkit-text-stroke: 3px rgba(255,255,255,0.6);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
 .gummy-shadow {
   box-shadow:
     0 4px 0 0 rgba(0,0,0,0.1),

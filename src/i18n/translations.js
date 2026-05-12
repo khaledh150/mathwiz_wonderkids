@@ -55,6 +55,7 @@ export const translations = {
       confirmFinish: 'Are you sure you want to finish? You still have time left!',
       timeUp: 'Time\'s Up!',
       submitting: 'Submitting your answers...',
+      confirmExit: 'Are you sure you want to exit? Your progress will be lost.',
     },
     results: {
       title: 'Great Job!',
@@ -168,6 +169,7 @@ export const translations = {
       confirmFinish: 'คุณแน่ใจหรือไม่ว่าต้องการเสร็จสิ้น? คุณยังมีเวลาเหลืออยู่!',
       timeUp: 'หมดเวลา!',
       submitting: 'กำลังส่งคำตอบของคุณ...',
+      confirmExit: 'คุณแน่ใจหรือไม่ว่าต้องการออก? ความคืบหน้าจะหายไป',
     },
     results: {
       title: 'เก่งมาก!',
