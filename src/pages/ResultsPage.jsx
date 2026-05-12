@@ -45,12 +45,11 @@ export default function ResultsPage({ examData, onBackToHome }) {
               className="w-24 h-24 lg:w-28 lg:h-28 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center gummy-shadow-lg mx-auto"
             >
               <div className="text-center">
-                <div className="text-2xl lg:text-3xl font-bold text-white">{correct}</div>
-                <div className="text-white/70 text-[10px]">{t('results.outOf')} {totalQuestions}</div>
+                <div className="text-4xl lg:text-5xl font-bold text-white">{correct}</div>
+                <div className="text-white/80 text-sm font-medium">{t('results.outOf')} {totalQuestions}</div>
               </div>
             </motion.div>
             <h1 className="text-xl lg:text-2xl font-bold text-text mt-2">{t('results.title')}</h1>
-            <p className={`text-base font-bold ${grade.color}`}>{grade.text}</p>
           </div>
 
           {/* Right: Stats + buttons */}
