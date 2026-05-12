@@ -12,6 +12,7 @@ import LevelSelectPage from './pages/LevelSelectPage'
 import ExamPage from './pages/ExamPage'
 import ResultsPage from './pages/ResultsPage'
 import PrintExamPage from './pages/PrintExamPage'
+import InAppBrowserGuard from './components/InAppBrowserGuard'
 
 const PAGES = {
   LOADING: 'loading',
@@ -137,8 +138,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <AppContent />
-    </LanguageProvider>
+    <InAppBrowserGuard>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
+    </InAppBrowserGuard>
   )
 }

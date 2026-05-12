@@ -33,10 +33,6 @@
   user-select: none;
 }
 
-html {
-  color-scheme: light only !important;
-}
-
 body {
   font-family: 'Fredoka', system-ui, sans-serif;
   background-color: #FFF5F0;
@@ -69,14 +65,6 @@ input, textarea, select {
 .min-h-screen-safe {
   min-height: 100vh;
   min-height: 100dvh;
-}
-
-@media (prefers-color-scheme: dark) {
-  html, body {
-    color-scheme: light only !important;
-    background-color: #FFF5F0 !important;
-    color: #3D2C4E !important;
-  }
 }
 
 .countdown-stroke {
