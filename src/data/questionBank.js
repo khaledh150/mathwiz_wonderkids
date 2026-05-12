@@ -6618,6 +6618,7 @@ export const questionBank = {
     {
       "id": 1,
       "question": "ห.ร.ม. ของ 12 และ 18 = ?",
+      "questionEn": "GCD of 12 and 18 = ?",
       "answer": 6,
       "answerDisplay": "6",
       "distractors": [
@@ -6629,6 +6630,7 @@ export const questionBank = {
     {
       "id": 2,
       "question": "ค.ร.น. ของ 4 และ 6 = ?",
+      "questionEn": "LCM of 4 and 6 = ?",
       "answer": 12,
       "answerDisplay": "12",
       "distractors": [
@@ -6662,6 +6664,7 @@ export const questionBank = {
     {
       "id": 5,
       "question": "25% ของ 200 = ?",
+      "questionEn": "25% of 200 = ?",
       "answer": 50,
       "answerDisplay": "50",
       "distractors": [
@@ -6673,6 +6676,7 @@ export const questionBank = {
     {
       "id": 6,
       "question": "ห.ร.ม. ของ 24 และ 36 = ?",
+      "questionEn": "GCD of 24 and 36 = ?",
       "answer": 12,
       "answerDisplay": "12",
       "distractors": [
@@ -6684,6 +6688,7 @@ export const questionBank = {
     {
       "id": 7,
       "question": "ค.ร.น. ของ 8 และ 12 = ?",
+      "questionEn": "LCM of 8 and 12 = ?",
       "answer": 24,
       "answerDisplay": "24",
       "distractors": [
@@ -6717,6 +6722,7 @@ export const questionBank = {
     {
       "id": 10,
       "question": "40% ของ 150 = ?",
+      "questionEn": "40% of 150 = ?",
       "answer": 60,
       "answerDisplay": "60",
       "distractors": [
@@ -6728,6 +6734,7 @@ export const questionBank = {
     {
       "id": 11,
       "question": "ห.ร.ม. ของ 20 และ 30 = ?",
+      "questionEn": "GCD of 20 and 30 = ?",
       "answer": 10,
       "answerDisplay": "10",
       "distractors": [
@@ -6739,6 +6746,7 @@ export const questionBank = {
     {
       "id": 12,
       "question": "ค.ร.น. ของ 5 และ 15 = ?",
+      "questionEn": "LCM of 5 and 15 = ?",
       "answer": 15,
       "answerDisplay": "15",
       "distractors": [
@@ -6772,6 +6780,7 @@ export const questionBank = {
     {
       "id": 15,
       "question": "15% ของ 400 = ?",
+      "questionEn": "15% of 400 = ?",
       "answer": 60,
       "answerDisplay": "60",
       "distractors": [
@@ -6783,6 +6792,7 @@ export const questionBank = {
     {
       "id": 16,
       "question": "ห.ร.ม. ของ 16 และ 40 = ?",
+      "questionEn": "GCD of 16 and 40 = ?",
       "answer": 8,
       "answerDisplay": "8",
       "distractors": [
@@ -6794,6 +6804,7 @@ export const questionBank = {
     {
       "id": 17,
       "question": "ค.ร.น. ของ 7 และ 14 = ?",
+      "questionEn": "LCM of 7 and 14 = ?",
       "answer": 14,
       "answerDisplay": "14",
       "distractors": [
@@ -6827,6 +6838,7 @@ export const questionBank = {
     {
       "id": 20,
       "question": "60% ของ 80 = ?",
+      "questionEn": "60% of 80 = ?",
       "answer": 48,
       "answerDisplay": "48",
       "distractors": [
@@ -6838,6 +6850,7 @@ export const questionBank = {
     {
       "id": 21,
       "question": "ห.ร.ม. ของ 18 และ 27 = ?",
+      "questionEn": "GCD of 18 and 27 = ?",
       "answer": 9,
       "answerDisplay": "9",
       "distractors": [
@@ -6849,6 +6862,7 @@ export const questionBank = {
     {
       "id": 22,
       "question": "ค.ร.น. ของ 9 และ 15 = ?",
+      "questionEn": "LCM of 9 and 15 = ?",
       "answer": 45,
       "answerDisplay": "45",
       "distractors": [
@@ -6882,6 +6896,7 @@ export const questionBank = {
     {
       "id": 25,
       "question": "35% ของ 120 = ?",
+      "questionEn": "35% of 120 = ?",
       "answer": 42,
       "answerDisplay": "42",
       "distractors": [
@@ -6893,6 +6908,7 @@ export const questionBank = {
     {
       "id": 26,
       "question": "ห.ร.ม. ของ 21 และ 28 = ?",
+      "questionEn": "GCD of 21 and 28 = ?",
       "answer": 7,
       "answerDisplay": "7",
       "distractors": [
@@ -6904,6 +6920,7 @@ export const questionBank = {
     {
       "id": 27,
       "question": "ค.ร.น. ของ 6 และ 9 = ?",
+      "questionEn": "LCM of 6 and 9 = ?",
       "answer": 18,
       "answerDisplay": "18",
       "distractors": [
@@ -6937,6 +6954,7 @@ export const questionBank = {
     {
       "id": 30,
       "question": "75% ของ 60 = ?",
+      "questionEn": "75% of 60 = ?",
       "answer": 45,
       "answerDisplay": "45",
       "distractors": [
@@ -6948,6 +6966,7 @@ export const questionBank = {
     {
       "id": 31,
       "question": "ห.ร.ม. ของ 14 และ 49 = ?",
+      "questionEn": "GCD of 14 and 49 = ?",
       "answer": 7,
       "answerDisplay": "7",
       "distractors": [
@@ -6959,6 +6978,7 @@ export const questionBank = {
     {
       "id": 32,
       "question": "ค.ร.น. ของ 10 และ 25 = ?",
+      "questionEn": "LCM of 10 and 25 = ?",
       "answer": 50,
       "answerDisplay": "50",
       "distractors": [
@@ -6992,6 +7012,7 @@ export const questionBank = {
     {
       "id": 35,
       "question": "20% ของ 500 = ?",
+      "questionEn": "20% of 500 = ?",
       "answer": 100,
       "answerDisplay": "100",
       "distractors": [
@@ -7003,6 +7024,7 @@ export const questionBank = {
     {
       "id": 36,
       "question": "ห.ร.ม. ของ 32 และ 48 = ?",
+      "questionEn": "GCD of 32 and 48 = ?",
       "answer": 16,
       "answerDisplay": "16",
       "distractors": [
@@ -7014,6 +7036,7 @@ export const questionBank = {
     {
       "id": 37,
       "question": "ค.ร.น. ของ 3 และ 11 = ?",
+      "questionEn": "LCM of 3 and 11 = ?",
       "answer": 33,
       "answerDisplay": "33",
       "distractors": [
@@ -7047,6 +7070,7 @@ export const questionBank = {
     {
       "id": 40,
       "question": "45% ของ 200 = ?",
+      "questionEn": "45% of 200 = ?",
       "answer": 90,
       "answerDisplay": "90",
       "distractors": [
@@ -7058,6 +7082,7 @@ export const questionBank = {
     {
       "id": 41,
       "question": "ห.ร.ม. ของ 45 และ 60 = ?",
+      "questionEn": "GCD of 45 and 60 = ?",
       "answer": 15,
       "answerDisplay": "15",
       "distractors": [
@@ -7069,6 +7094,7 @@ export const questionBank = {
     {
       "id": 42,
       "question": "ค.ร.น. ของ 12 และ 18 = ?",
+      "questionEn": "LCM of 12 and 18 = ?",
       "answer": 36,
       "answerDisplay": "36",
       "distractors": [
@@ -7102,6 +7128,7 @@ export const questionBank = {
     {
       "id": 45,
       "question": "12% ของ 250 = ?",
+      "questionEn": "12% of 250 = ?",
       "answer": 30,
       "answerDisplay": "30",
       "distractors": [
@@ -7113,6 +7140,7 @@ export const questionBank = {
     {
       "id": 46,
       "question": "ห.ร.ม. ของ 54 และ 72 = ?",
+      "questionEn": "GCD of 54 and 72 = ?",
       "answer": 18,
       "answerDisplay": "18",
       "distractors": [
@@ -7124,6 +7152,7 @@ export const questionBank = {
     {
       "id": 47,
       "question": "ค.ร.น. ของ 14 และ 21 = ?",
+      "questionEn": "LCM of 14 and 21 = ?",
       "answer": 42,
       "answerDisplay": "42",
       "distractors": [
@@ -7157,6 +7186,7 @@ export const questionBank = {
     {
       "id": 50,
       "question": "90% ของ 40 = ?",
+      "questionEn": "90% of 40 = ?",
       "answer": 36,
       "answerDisplay": "36",
       "distractors": [
@@ -7168,6 +7198,7 @@ export const questionBank = {
     {
       "id": 51,
       "question": "ห.ร.ม. ของ 36 และ 90 = ?",
+      "questionEn": "GCD of 36 and 90 = ?",
       "answer": 18,
       "answerDisplay": "18",
       "distractors": [
@@ -7179,6 +7210,7 @@ export const questionBank = {
     {
       "id": 52,
       "question": "ค.ร.น. ของ 16 และ 20 = ?",
+      "questionEn": "LCM of 16 and 20 = ?",
       "answer": 80,
       "answerDisplay": "80",
       "distractors": [
@@ -7212,6 +7244,7 @@ export const questionBank = {
     {
       "id": 55,
       "question": "18% ของ 300 = ?",
+      "questionEn": "18% of 300 = ?",
       "answer": 54,
       "answerDisplay": "54",
       "distractors": [
@@ -7223,6 +7256,7 @@ export const questionBank = {
     {
       "id": 56,
       "question": "ห.ร.ม. ของ 27 และ 45 = ?",
+      "questionEn": "GCD of 27 and 45 = ?",
       "answer": 9,
       "answerDisplay": "9",
       "distractors": [
@@ -7234,6 +7268,7 @@ export const questionBank = {
     {
       "id": 57,
       "question": "ค.ร.น. ของ 15 และ 35 = ?",
+      "questionEn": "LCM of 15 and 35 = ?",
       "answer": 105,
       "answerDisplay": "105",
       "distractors": [
@@ -7267,6 +7302,7 @@ export const questionBank = {
     {
       "id": 60,
       "question": "55% ของ 180 = ?",
+      "questionEn": "55% of 180 = ?",
       "answer": 99,
       "answerDisplay": "99",
       "distractors": [
@@ -7278,6 +7314,7 @@ export const questionBank = {
     {
       "id": 61,
       "question": "ห.ร.ม. ของ 63 และ 81 = ?",
+      "questionEn": "GCD of 63 and 81 = ?",
       "answer": 9,
       "answerDisplay": "9",
       "distractors": [
@@ -7289,6 +7326,7 @@ export const questionBank = {
     {
       "id": 62,
       "question": "ค.ร.น. ของ 8 และ 14 = ?",
+      "questionEn": "LCM of 8 and 14 = ?",
       "answer": 56,
       "answerDisplay": "56",
       "distractors": [
@@ -7322,6 +7360,7 @@ export const questionBank = {
     {
       "id": 65,
       "question": "32% ของ 250 = ?",
+      "questionEn": "32% of 250 = ?",
       "answer": 80,
       "answerDisplay": "80",
       "distractors": [
@@ -7333,6 +7372,7 @@ export const questionBank = {
     {
       "id": 66,
       "question": "ห.ร.ม. ของ 42 และ 56 = ?",
+      "questionEn": "GCD of 42 and 56 = ?",
       "answer": 14,
       "answerDisplay": "14",
       "distractors": [
@@ -7344,6 +7384,7 @@ export const questionBank = {
     {
       "id": 67,
       "question": "ค.ร.น. ของ 18 และ 24 = ?",
+      "questionEn": "LCM of 18 and 24 = ?",
       "answer": 72,
       "answerDisplay": "72",
       "distractors": [
@@ -7377,6 +7418,7 @@ export const questionBank = {
     {
       "id": 70,
       "question": "65% ของ 140 = ?",
+      "questionEn": "65% of 140 = ?",
       "answer": 91,
       "answerDisplay": "91",
       "distractors": [
@@ -7388,6 +7430,7 @@ export const questionBank = {
     {
       "id": 71,
       "question": "ห.ร.ม. ของ 70 และ 105 = ?",
+      "questionEn": "GCD of 70 and 105 = ?",
       "answer": 35,
       "answerDisplay": "35",
       "distractors": [
@@ -7399,6 +7442,7 @@ export const questionBank = {
     {
       "id": 72,
       "question": "ค.ร.น. ของ 20 และ 30 = ?",
+      "questionEn": "LCM of 20 and 30 = ?",
       "answer": 60,
       "answerDisplay": "60",
       "distractors": [
@@ -7432,6 +7476,7 @@ export const questionBank = {
     {
       "id": 75,
       "question": "5% ของ 600 = ?",
+      "questionEn": "5% of 600 = ?",
       "answer": 30,
       "answerDisplay": "30",
       "distractors": [
@@ -7443,6 +7488,7 @@ export const questionBank = {
     {
       "id": 76,
       "question": "ห.ร.ม. ของ 25 และ 100 = ?",
+      "questionEn": "GCD of 25 and 100 = ?",
       "answer": 25,
       "answerDisplay": "25",
       "distractors": [
@@ -7454,6 +7500,7 @@ export const questionBank = {
     {
       "id": 77,
       "question": "ค.ร.น. ของ 9 และ 27 = ?",
+      "questionEn": "LCM of 9 and 27 = ?",
       "answer": 27,
       "answerDisplay": "27",
       "distractors": [
@@ -7487,6 +7534,7 @@ export const questionBank = {
     {
       "id": 80,
       "question": "28% ของ 450 = ?",
+      "questionEn": "28% of 450 = ?",
       "answer": 126,
       "answerDisplay": "126",
       "distractors": [
@@ -7498,6 +7546,7 @@ export const questionBank = {
     {
       "id": 81,
       "question": "ห.ร.ม. ของ 48 และ 64 = ?",
+      "questionEn": "GCD of 48 and 64 = ?",
       "answer": 16,
       "answerDisplay": "16",
       "distractors": [
@@ -7509,6 +7558,7 @@ export const questionBank = {
     {
       "id": 82,
       "question": "ค.ร.น. ของ 22 และ 33 = ?",
+      "questionEn": "LCM of 22 and 33 = ?",
       "answer": 66,
       "answerDisplay": "66",
       "distractors": [
@@ -7542,6 +7592,7 @@ export const questionBank = {
     {
       "id": 85,
       "question": "72% ของ 50 = ?",
+      "questionEn": "72% of 50 = ?",
       "answer": 36,
       "answerDisplay": "36",
       "distractors": [
@@ -7553,6 +7604,7 @@ export const questionBank = {
     {
       "id": 86,
       "question": "ห.ร.ม. ของ 81 และ 108 = ?",
+      "questionEn": "GCD of 81 and 108 = ?",
       "answer": 27,
       "answerDisplay": "27",
       "distractors": [
@@ -7564,6 +7616,7 @@ export const questionBank = {
     {
       "id": 87,
       "question": "ค.ร.น. ของ 25 และ 40 = ?",
+      "questionEn": "LCM of 25 and 40 = ?",
       "answer": 200,
       "answerDisplay": "200",
       "distractors": [
@@ -7597,6 +7650,7 @@ export const questionBank = {
     {
       "id": 90,
       "question": "8% ของ 125 = ?",
+      "questionEn": "8% of 125 = ?",
       "answer": 10,
       "answerDisplay": "10",
       "distractors": [
@@ -7608,6 +7662,7 @@ export const questionBank = {
     {
       "id": 91,
       "question": "ห.ร.ม. ของ 39 และ 52 = ?",
+      "questionEn": "GCD of 39 and 52 = ?",
       "answer": 13,
       "answerDisplay": "13",
       "distractors": [
@@ -7619,6 +7674,7 @@ export const questionBank = {
     {
       "id": 92,
       "question": "ค.ร.น. ของ 11 และ 22 = ?",
+      "questionEn": "LCM of 11 and 22 = ?",
       "answer": 22,
       "answerDisplay": "22",
       "distractors": [
@@ -7652,6 +7708,7 @@ export const questionBank = {
     {
       "id": 95,
       "question": "48% ของ 250 = ?",
+      "questionEn": "48% of 250 = ?",
       "answer": 120,
       "answerDisplay": "120",
       "distractors": [
@@ -7663,6 +7720,7 @@ export const questionBank = {
     {
       "id": 96,
       "question": "ห.ร.ม. ของ 44 และ 66 = ?",
+      "questionEn": "GCD of 44 and 66 = ?",
       "answer": 22,
       "answerDisplay": "22",
       "distractors": [
@@ -7674,6 +7732,7 @@ export const questionBank = {
     {
       "id": 97,
       "question": "ค.ร.น. ของ 28 และ 42 = ?",
+      "questionEn": "LCM of 28 and 42 = ?",
       "answer": 84,
       "answerDisplay": "84",
       "distractors": [
@@ -7707,6 +7766,7 @@ export const questionBank = {
     {
       "id": 100,
       "question": "85% ของ 200 = ?",
+      "questionEn": "85% of 200 = ?",
       "answer": 170,
       "answerDisplay": "170",
       "distractors": [

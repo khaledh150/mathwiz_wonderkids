@@ -4,7 +4,7 @@ import { generateExam, levelConfig } from '../data/mathEngine'
 import { ArrowLeft, Printer, Key } from 'lucide-react'
 
 export default function PrintExamPage({ onBack }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [selectedLevel, setSelectedLevel] = useState(null)
   const [examData, setExamData] = useState(null)
   const [showAnswerKey, setShowAnswerKey] = useState(false)
@@ -91,7 +91,7 @@ export default function PrintExamPage({ onBack }) {
             <div key={q.id} className="flex gap-3 items-start">
               <span className="font-bold min-w-[2rem] text-right">{i + 1}.</span>
               <div className="flex-1">
-                <p className="font-bold text-lg mb-1">{q.question}</p>
+                <p className="font-bold text-lg mb-1">{lang === 'en' && q.questionEn ? q.questionEn : q.question}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {q.choices.map((choice, ci) => (
                     <span key={ci} className="text-sm">

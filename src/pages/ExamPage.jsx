@@ -247,7 +247,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
           >
             <div className="bg-white rounded-3xl p-5 sm:p-7 gummy-shadow-lg mb-3 text-center">
               <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text leading-relaxed break-words">
-                {currentQuestion.question}
+                {lang === 'en' && currentQuestion.questionEn ? currentQuestion.questionEn : currentQuestion.question}
               </p>
             </div>
 

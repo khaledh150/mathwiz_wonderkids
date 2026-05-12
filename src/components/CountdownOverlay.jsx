@@ -44,7 +44,7 @@ export default function CountdownOverlay({ onComplete }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-text/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-gradient-to-br from-purple/90 to-primary/90 backdrop-blur-sm">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
