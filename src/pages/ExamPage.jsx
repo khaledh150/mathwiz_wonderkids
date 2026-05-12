@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLang } from '../i18n/LanguageContext'
-import { useTimer } from '../hooks/useTimer'
 import { useSwipe } from '../hooks/useSwipe'
 import { generateExam } from '../data/mathEngine'
 import { playSound } from '../utils/sound'
@@ -9,6 +8,8 @@ import { saveExamAnswers, saveExamProgress, getExamProgress, clearExamProgress }
 import { requestFullscreen, toggleFullscreen, isFullscreen } from '../utils/fullscreen'
 import CountdownOverlay from '../components/CountdownOverlay'
 import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize } from 'lucide-react'
+
+const EXAM_DURATION_MS = 10 * 60 * 1000
 
 export default function ExamPage({ levelConfig: config, user, onFinish }) {
   const { t, lang, toggleLang } = useLang()
@@ -29,28 +30,40 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
   const [currentIndex, setCurrentIndex] = useState(isResuming ? savedProgress.currentIndex : 0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [isFull, setIsFull] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(EXAM_DURATION_MS)
   const answersRef = useRef(isResuming ? (savedProgress.answers || {}) : {})
+  const deadlineRef = useRef(null)
+  const timerRafRef = useRef(null)
+  const finishedRef = useRef(false)
 
-  const resumedElapsed = isResuming ? (savedProgress.elapsedSeconds || 0) : 0
-  const totalSeconds = config.timeMinutes * 60
-  const remainingOnResume = Math.max(0, totalSeconds - resumedElapsed)
-
-  const handleTimeUp = useCallback(() => {
-    playSound('timeWarning')
-    finishExam()
-  }, [])
-
-  const { timeLeft, start: startTimer, stop: stopTimer, getElapsedSeconds } = useTimer(
-    isResuming ? remainingOnResume : totalSeconds,
-    handleTimeUp
-  )
-
-  const currentQuestion = questions[currentIndex]
+  function startCountdown(deadlineMs) {
+    deadlineRef.current = deadlineMs
+    function tick() {
+      const remaining = deadlineRef.current - Date.now()
+      if (remaining <= 0) {
+        setTimeLeft(0)
+        if (!finishedRef.current) {
+          finishedRef.current = true
+          playSound('timeWarning')
+          finishExam()
+        }
+        return
+      }
+      setTimeLeft(remaining)
+      timerRafRef.current = requestAnimationFrame(tick)
+    }
+    timerRafRef.current = requestAnimationFrame(tick)
+  }
 
   useEffect(() => {
     if (isResuming && phase === 'exam') {
-      startTimer()
+      const elapsedMs = (savedProgress.elapsedSeconds || 0) * 1000
+      const deadline = Date.now() + (EXAM_DURATION_MS - elapsedMs)
+      startCountdown(deadline)
       setSelectedAnswer(answersRef.current[questions[currentIndex]?.id] ?? null)
+    }
+    return () => {
+      if (timerRafRef.current) cancelAnimationFrame(timerRafRef.current)
     }
   }, [])
 
@@ -64,22 +77,27 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     }
   }, [])
 
+  function getElapsedSeconds() {
+    if (!deadlineRef.current) return 0
+    const remaining = deadlineRef.current - Date.now()
+    return Math.round((EXAM_DURATION_MS - Math.max(0, remaining)) / 1000)
+  }
+
   function persistProgress() {
-    const elapsed = resumedElapsed + getElapsedSeconds()
     saveExamProgress({
       level: config.level,
       user,
       questions,
       answers: { ...answersRef.current },
       currentIndex,
-      elapsedSeconds: elapsed,
+      elapsedSeconds: getElapsedSeconds(),
     })
   }
 
   function finishExam() {
-    stopTimer()
+    if (timerRafRef.current) cancelAnimationFrame(timerRafRef.current)
     clearExamProgress()
-    const elapsed = resumedElapsed + getElapsedSeconds()
+    const elapsed = getElapsedSeconds()
     const results = questions.map((q) => ({
       id: q.id,
       question: q.question,
@@ -101,7 +119,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
       wrong,
       skipped,
       timeTaken: elapsed,
-      totalTime: totalSeconds,
+      totalTime: EXAM_DURATION_MS / 1000,
       score: correct,
       accuracy: questions.length > 0 ? Math.round((correct / questions.length) * 100) : 0,
       results,
@@ -146,17 +164,23 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   function handleCountdownComplete() {
     setPhase('exam')
-    startTimer()
+    const deadline = Date.now() + EXAM_DURATION_MS
+    startCountdown(deadline)
     requestFullscreen()
   }
 
   const swipeHandlers = useSwipe(handleSkip, null, 60)
 
-  const minutes = Math.floor(timeLeft / 60)
-  const seconds = timeLeft % 60
-  const timePercent = (timeLeft / totalSeconds) * 100
-  const isTimeWarning = timeLeft <= 60
-  const isTimeCritical = timeLeft <= 30
+  const currentQuestion = questions[currentIndex]
+  const answeredCount = Object.keys(answersRef.current).length
+
+  const totalSec = Math.ceil(timeLeft / 1000)
+  const minutes = Math.floor(totalSec / 60)
+  const seconds = totalSec % 60
+  const isTimeWarning = totalSec <= 60
+  const isTimeCritical = totalSec <= 30
+
+  const questionProgress = ((currentIndex + 1) / questions.length) * 100
 
   if (phase === 'countdown') {
     return <CountdownOverlay onComplete={handleCountdownComplete} />
@@ -164,9 +188,9 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden" {...swipeHandlers}>
-      {/* Single Header with logo, progress, timer, controls */}
+      {/* Header: logo, question counter, timer, controls */}
       <div className="no-print shrink-0 px-3 py-2 bg-white/90 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
             <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-7 w-auto" />
             <span className="text-sm font-medium text-text-light">
@@ -174,7 +198,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className={`flex items-center gap-1 font-bold text-lg ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
+            <div className={`flex items-center gap-1 font-bold text-lg tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
               <Clock size={18} />
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
@@ -193,11 +217,11 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             </button>
           </div>
         </div>
+        {/* Question progress bar - fills as you advance through questions */}
         <div className="w-full h-2 bg-bg rounded-full overflow-hidden">
-          <motion.div
-            className={`h-full rounded-full transition-colors ${isTimeCritical ? 'bg-red' : isTimeWarning ? 'bg-orange' : 'bg-secondary'}`}
-            style={{ width: `${timePercent}%` }}
-            transition={{ duration: 0.3 }}
+          <div
+            className="h-full rounded-full bg-secondary transition-all duration-300"
+            style={{ width: `${questionProgress}%` }}
           />
         </div>
       </div>
@@ -213,14 +237,12 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             transition={{ duration: 0.25 }}
             className="w-full max-w-xl"
           >
-            {/* Question */}
             <div className="bg-white rounded-3xl p-5 sm:p-7 gummy-shadow-lg mb-3 text-center">
               <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text leading-relaxed break-words">
                 {currentQuestion.question}
               </p>
             </div>
 
-            {/* Choices */}
             <div className="grid grid-cols-2 gap-3">
               {currentQuestion.choices.map((choice, i) => {
                 const isSelected = selectedAnswer === choice
