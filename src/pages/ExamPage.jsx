@@ -5,7 +5,7 @@ import { useSwipe } from '../hooks/useSwipe'
 import { generateExam } from '../data/mathEngine'
 import { playSound } from '../utils/sound'
 import { saveExamAnswers, saveExamProgress, getExamProgress, clearExamProgress } from '../utils/storage'
-import { requestFullscreen, toggleFullscreen, isFullscreen } from '../utils/fullscreen'
+import { toggleFullscreen, isFullscreen } from '../utils/fullscreen'
 import CountdownOverlay from '../components/CountdownOverlay'
 import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize } from 'lucide-react'
 
@@ -181,7 +181,6 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     const deadline = Date.now() + EXAM_DURATION_SEC * 1000
     setDisplaySeconds(EXAM_DURATION_SEC)
     startCountdown(deadline)
-    requestFullscreen()
   }
 
   const swipeHandlers = useSwipe(handleSkip, null, 60)
@@ -198,7 +197,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
   }
 
   return (
-    <div className="h-dvh flex flex-col overflow-hidden" {...swipeHandlers}>
+    <div className="h-screen-safe flex flex-col overflow-hidden" {...swipeHandlers}>
       <div className="no-print shrink-0 px-3 py-1.5 bg-white/90 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">

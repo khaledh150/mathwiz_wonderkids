@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { useLang } from '../i18n/LanguageContext'
 import { levelConfig } from '../data/mathEngine'
 import { playSound } from '../utils/sound'
+import { requestFullscreen } from '../utils/fullscreen'
 import { Clock, HelpCircle, ChevronRight, Printer } from 'lucide-react'
 
 const levelNameKeys = [
@@ -36,6 +37,7 @@ export default function LevelSelectPage({ user, onSelectLevel, onPrint }) {
               whileTap={{ scale: 0.97 }}
               onClick={() => {
                 playSound('select')
+                requestFullscreen()
                 onSelectLevel(config)
               }}
               className={`w-full text-left p-4 rounded-2xl bg-gradient-to-br ${config.color} text-white gummy-shadow gummy-press transition-all`}

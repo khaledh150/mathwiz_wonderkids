@@ -87,11 +87,13 @@ export function checkVersionAndReload(currentVersion) {
   const storedVersion = safeGet(KEYS.VERSION)
   if (storedVersion && storedVersion !== currentVersion) {
     safeSet(KEYS.VERSION, currentVersion)
-    if ('caches' in window) {
-      caches.keys().then((names) => {
-        names.forEach((name) => caches.delete(name))
-      })
-    }
+    try {
+      if ('caches' in window) {
+        caches.keys().then((names) => {
+          names.forEach((name) => caches.delete(name))
+        }).catch(() => {})
+      }
+    } catch {}
     window.location.reload()
     return true
   }

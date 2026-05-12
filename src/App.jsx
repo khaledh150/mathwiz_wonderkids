@@ -73,7 +73,7 @@ function AppContent() {
   const showHeader = page !== PAGES.LOADING && page !== PAGES.EXAM
 
   return (
-    <div className="min-h-dvh flex flex-col bg-bg">
+    <div className="min-h-screen-safe flex flex-col bg-bg">
       {showHeader && <Header />}
 
       <AnimatePresence mode="wait">
