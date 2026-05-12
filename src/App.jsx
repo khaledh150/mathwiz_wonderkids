@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { LanguageProvider } from './i18n/LanguageContext'
-import { checkVersionAndReload, getUser } from './utils/storage'
+import { checkVersionAndReload, getUser, getExamProgress } from './utils/storage'
+import { levelConfig } from './data/mathEngine'
 import { APP_VERSION } from './version'
 import Header from './components/Header'
 import LoadingScreen from './components/LoadingScreen'
@@ -31,8 +32,18 @@ function AppContent() {
     checkVersionAndReload(APP_VERSION)
 
     const existing = getUser()
+    const savedExam = getExamProgress()
     const timer = setTimeout(() => {
-      if (existing) {
+      if (savedExam && existing) {
+        setUser(existing)
+        const lvl = levelConfig.find((l) => l.level === savedExam.level)
+        if (lvl) {
+          setSelectedLevel(lvl)
+          setPage(PAGES.EXAM)
+        } else {
+          setPage(PAGES.LEVELS)
+        }
+      } else if (existing) {
         setUser(existing)
         setPage(PAGES.LEVELS)
       } else {
@@ -95,7 +106,7 @@ function AppContent() {
 
           {page === PAGES.EXAM && selectedLevel && (
             <ExamPage
-              key={`exam-${selectedLevel.level}-${Date.now()}`}
+              key={`exam-${selectedLevel.level}`}
               levelConfig={selectedLevel}
               user={user}
               onFinish={handleExamFinish}

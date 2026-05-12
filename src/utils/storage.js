@@ -3,6 +3,7 @@ const KEYS = {
   ANSWERS: 'mathwiz_answers',
   PENDING_SYNC: 'mathwiz_pending_sync',
   VERSION: 'mathwiz_version',
+  EXAM_PROGRESS: 'mathwiz_exam_progress',
 }
 
 function safeGet(key) {
@@ -68,6 +69,18 @@ export function markSynced(savedAt) {
 
 export function clearPendingSync() {
   try { localStorage.removeItem(KEYS.PENDING_SYNC) } catch {}
+}
+
+export function saveExamProgress(progress) {
+  return safeSet(KEYS.EXAM_PROGRESS, progress)
+}
+
+export function getExamProgress() {
+  return safeGet(KEYS.EXAM_PROGRESS)
+}
+
+export function clearExamProgress() {
+  try { localStorage.removeItem(KEYS.EXAM_PROGRESS) } catch {}
 }
 
 export function checkVersionAndReload(currentVersion) {

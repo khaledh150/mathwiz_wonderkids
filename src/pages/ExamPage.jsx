@@ -5,37 +5,70 @@ import { useTimer } from '../hooks/useTimer'
 import { useSwipe } from '../hooks/useSwipe'
 import { generateExam } from '../data/mathEngine'
 import { playSound } from '../utils/sound'
-import { saveExamAnswers } from '../utils/storage'
+import { saveExamAnswers, saveExamProgress, getExamProgress, clearExamProgress } from '../utils/storage'
 import { requestFullscreen } from '../utils/fullscreen'
 import CountdownOverlay from '../components/CountdownOverlay'
 import { Clock, ChevronRight, ChevronLeft, Flag, AlertTriangle } from 'lucide-react'
 
 export default function ExamPage({ levelConfig: config, user, onFinish }) {
   const { t } = useLang()
-  const [phase, setPhase] = useState('countdown')
-  const [questions, setQuestions] = useState(() => generateExam(config.level, config.questions))
-  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const savedProgress = getExamProgress()
+  const isResuming = savedProgress && savedProgress.level === config.level && savedProgress.user?.name === user?.name
+
+  const [phase, setPhase] = useState(isResuming ? 'exam' : 'countdown')
+  const [questions, setQuestions] = useState(() => {
+    if (isResuming) return savedProgress.questions
+    return generateExam(config.level, config.questions)
+  })
+  const [currentIndex, setCurrentIndex] = useState(isResuming ? savedProgress.currentIndex : 0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [showConfirmFinish, setShowConfirmFinish] = useState(false)
-  const answersRef = useRef({})
+  const answersRef = useRef(isResuming ? (savedProgress.answers || {}) : {})
   const startTimeRef = useRef(null)
 
+  const resumedElapsed = isResuming ? (savedProgress.elapsedSeconds || 0) : 0
   const totalSeconds = config.timeMinutes * 60
+  const remainingOnResume = Math.max(0, totalSeconds - resumedElapsed)
 
   const handleTimeUp = useCallback(() => {
     playSound('timeWarning')
     finishExam()
   }, [])
 
-  const { timeLeft, start: startTimer, stop: stopTimer, getElapsedSeconds } = useTimer(totalSeconds, handleTimeUp)
+  const { timeLeft, isRunning, start: startTimer, stop: stopTimer, getElapsedSeconds } = useTimer(
+    isResuming ? remainingOnResume : totalSeconds,
+    handleTimeUp
+  )
 
   const currentQuestion = questions[currentIndex]
-  const isLastQuestion = currentIndex === questions.length - 1
   const answeredCount = Object.keys(answersRef.current).length
+
+  useEffect(() => {
+    if (isResuming && phase === 'exam') {
+      startTimeRef.current = Date.now() - resumedElapsed * 1000
+      startTimer()
+      setSelectedAnswer(answersRef.current[questions[currentIndex]?.id] ?? null)
+    }
+  }, [])
+
+  function persistProgress() {
+    const elapsed = resumedElapsed + getElapsedSeconds()
+    saveExamProgress({
+      level: config.level,
+      user,
+      questions,
+      answers: { ...answersRef.current },
+      currentIndex,
+      elapsedSeconds: elapsed,
+      startedAt: startTimeRef.current,
+    })
+  }
 
   function finishExam() {
     stopTimer()
-    const elapsed = getElapsedSeconds()
+    clearExamProgress()
+    const elapsed = resumedElapsed + getElapsedSeconds()
     const results = questions.map((q) => ({
       id: q.id,
       question: q.question,
@@ -71,6 +104,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   function goToQuestion(index) {
     if (index < 0 || index >= questions.length) return
+    persistProgress()
     setSelectedAnswer(answersRef.current[questions[index].id] ?? null)
     setCurrentIndex(index)
   }
@@ -80,7 +114,8 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
       answersRef.current[currentQuestion.id] = selectedAnswer
     }
 
-    if (isLastQuestion) {
+    const isLast = currentIndex === questions.length - 1
+    if (isLast) {
       if (answeredCount < questions.length) {
         setShowConfirmFinish(true)
       } else {
@@ -94,7 +129,8 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
 
   function handleSkip() {
     playSound('swipe')
-    if (isLastQuestion) {
+    const isLast = currentIndex === questions.length - 1
+    if (isLast) {
       setShowConfirmFinish(true)
     } else {
       goToQuestion(currentIndex + 1)
@@ -105,6 +141,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
     playSound('select')
     setSelectedAnswer(choice)
     answersRef.current[currentQuestion.id] = choice
+    persistProgress()
   }
 
   function handleCountdownComplete() {
@@ -146,15 +183,15 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
             transition={{ duration: 0.3 }}
           />
         </div>
-        {/* Question dots */}
-        <div className="flex gap-1 mt-2 justify-center flex-wrap">
+        {/* Question dots - scrollable for 100 questions */}
+        <div className="flex gap-0.5 mt-2 justify-start overflow-x-auto pb-1 scrollbar-hide">
           {questions.map((q, i) => {
             const answered = answersRef.current[q.id] !== undefined
             return (
               <button
                 key={q.id}
                 onClick={() => goToQuestion(i)}
-                className={`w-6 h-6 rounded-full text-xs font-bold transition-all ${
+                className={`w-5 h-5 min-w-5 rounded-full text-[10px] font-bold transition-all ${
                   i === currentIndex
                     ? 'bg-primary text-white scale-110'
                     : answered
@@ -182,7 +219,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
           >
             {/* Question */}
             <div className="bg-white rounded-3xl p-6 sm:p-8 gummy-shadow-lg mb-4 text-center">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text leading-relaxed">
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text leading-relaxed break-words">
                 {currentQuestion.question}
               </p>
             </div>
@@ -194,7 +231,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
                 const labels = ['A', 'B', 'C', 'D']
                 return (
                   <motion.button
-                    key={`${currentQuestion.id}-${choice}`}
+                    key={`${currentQuestion.id}-${choice}-${i}`}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleSelectAnswer(choice)}
                     className={`relative p-4 sm:p-5 rounded-2xl font-bold text-xl sm:text-2xl transition-all gummy-press ${
@@ -242,7 +279,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish }) {
           whileTap={{ scale: 0.95 }}
           className="flex items-center gap-1 px-6 py-2.5 rounded-xl bg-gradient-to-r from-secondary to-secondary-dark text-white font-bold gummy-shadow gummy-press transition-all"
         >
-          {isLastQuestion ? t('exam.finish') : t('exam.next')}
+          {currentIndex === questions.length - 1 ? t('exam.finish') : t('exam.next')}
           <ChevronRight size={18} />
         </motion.button>
       </div>
