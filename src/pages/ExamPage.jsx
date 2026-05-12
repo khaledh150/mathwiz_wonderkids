@@ -208,41 +208,42 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
 
   return (
     <div className="h-screen-safe flex flex-col overflow-hidden" {...swipeHandlers}>
-      <div className="no-print shrink-0 px-3 py-1.5 bg-white/90 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-text-light whitespace-nowrap">
-            Q {currentIndex + 1} / {questions.length}
-          </span>
-          <div className="flex-1 h-2 bg-bg rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full bg-secondary transition-all duration-300"
-              style={{ width: `${questionProgress}%` }}
-            />
-          </div>
-          <div className={`flex items-center gap-1 font-bold text-lg tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
-            <Clock size={18} />
-            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-          </div>
-          <button
-            onClick={toggleLang}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple/10 text-purple font-semibold text-sm"
-          >
-            <Globe size={16} />
-            {lang === 'en' ? 'TH' : 'EN'}
-          </button>
-          <button
-            onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
-            className="p-1.5 rounded-full bg-secondary/10 text-secondary"
-          >
-            {isFull ? <Minimize size={18} /> : <Maximize size={18} />}
-          </button>
-          <button
-            onClick={handleExit}
-            className="p-1.5 rounded-full bg-red/10 text-red"
-          >
-            <LogOut size={18} />
-          </button>
+      <div className="no-print shrink-0 flex items-center gap-2 px-3 py-1.5">
+        <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-7 w-auto shrink-0" />
+        <div className="flex-1 h-2 bg-bg rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full bg-secondary transition-all duration-300"
+            style={{ width: `${questionProgress}%` }}
+          />
         </div>
+        <div className={`flex items-center gap-1 font-bold text-lg tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
+          <Clock size={18} />
+          {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+        </div>
+        <button
+          onClick={toggleLang}
+          className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple"
+        >
+          <Globe size={18} />
+        </button>
+        <button
+          onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
+          className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-secondary"
+        >
+          {isFull ? <Minimize size={18} /> : <Maximize size={18} />}
+        </button>
+        <button
+          onClick={handleExit}
+          className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-red"
+        >
+          <LogOut size={18} />
+        </button>
+      </div>
+
+      <div className="no-print shrink-0 px-3 -mt-0.5 mb-1">
+        <span className="text-sm font-bold text-text-light">
+          Q{currentIndex + 1}/{questions.length}
+        </span>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-2 sm:p-4 gap-1">
