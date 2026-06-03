@@ -9,7 +9,7 @@ function shuffle(arr) {
   return a
 }
 
-export function generateExam(level, questionCount = 100) {
+export function generateExam(level, questionCount = 200) {
   const bank = getExamQuestions(level)
 
   const selected = shuffle(bank).slice(0, questionCount)
@@ -29,11 +29,12 @@ export function generateExam(level, questionCount = 100) {
 }
 
 export const levelConfig = [
-  { level: 1, questions: 100, timeMinutes: 10, color: 'from-pink-300 to-rose-400', emoji: '🌟', colorHex: '#FF6B9D' },
-  { level: 2, questions: 100, timeMinutes: 10, color: 'from-orange-300 to-amber-400', emoji: '🔥', colorHex: '#FB923C' },
-  { level: 3, questions: 100, timeMinutes: 10, color: 'from-yellow-300 to-amber-400', emoji: '⚡', colorHex: '#FFE66D' },
-  { level: 4, questions: 100, timeMinutes: 10, color: 'from-green-300 to-emerald-400', emoji: '🍀', colorHex: '#34D399' },
-  { level: 5, questions: 100, timeMinutes: 10, color: 'from-teal-300 to-cyan-400', emoji: '🌊', colorHex: '#4ECDC4' },
-  { level: 6, questions: 100, timeMinutes: 10, color: 'from-blue-300 to-indigo-400', emoji: '🚀', colorHex: '#818CF8' },
-  { level: 7, questions: 100, timeMinutes: 10, color: 'from-purple-300 to-violet-400', emoji: '👑', colorHex: '#A78BFA' },
+  { level: 1, questions: 200, timeMinutes: 5, color: 'from-rose-200 to-pink-300', emoji: '🌟', colorHex: '#FDA4AF' },
+  { level: 2, questions: 200, timeMinutes: 5, color: 'from-pink-300 to-rose-400', emoji: '🔥', colorHex: '#FF6B9D' },
+  { level: 3, questions: 200, timeMinutes: 5, color: 'from-orange-300 to-amber-400', emoji: '⚡', colorHex: '#FB923C' },
+  { level: 4, questions: 200, timeMinutes: 5, color: 'from-yellow-300 to-amber-400', emoji: '🍀', colorHex: '#FFE66D' },
+  { level: 5, questions: 200, timeMinutes: 5, color: 'from-green-300 to-emerald-400', emoji: '🌊', colorHex: '#34D399' },
+  { level: 6, questions: 200, timeMinutes: 5, color: 'from-teal-300 to-cyan-400', emoji: '🚀', colorHex: '#4ECDC4' },
+  { level: 7, questions: 200, timeMinutes: 5, color: 'from-blue-300 to-indigo-400', emoji: '🎯', colorHex: '#818CF8' },
+  { level: 8, questions: 200, timeMinutes: 5, color: 'from-purple-300 to-violet-400', emoji: '👑', colorHex: '#A78BFA' },
 ]

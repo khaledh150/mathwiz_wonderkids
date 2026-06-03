@@ -10,9 +10,8 @@ import { renderQuestion } from '../utils/fractionRenderer'
 import CountdownOverlay from '../components/CountdownOverlay'
 import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize, LogOut } from 'lucide-react'
 
-const EXAM_DURATION_SEC = 10 * 60
-
 export default function ExamPage({ levelConfig: config, user, onFinish, onExit }) {
+  const EXAM_DURATION_SEC = config.timeMinutes * 60
   const { t, lang, toggleLang } = useLang()
 
   const savedProgress = getExamProgress()

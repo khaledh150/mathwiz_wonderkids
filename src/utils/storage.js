@@ -87,6 +87,7 @@ export function checkVersionAndReload(currentVersion) {
   const storedVersion = safeGet(KEYS.VERSION)
   if (storedVersion && storedVersion !== currentVersion) {
     safeSet(KEYS.VERSION, currentVersion)
+    clearExamProgress()
     try {
       if ('caches' in window) {
         caches.keys().then((names) => {
