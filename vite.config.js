@@ -20,7 +20,7 @@ export default defineConfig({
         theme_color: '#FFF5F0',
         background_color: '#FFF5F0',
         display: 'standalone',
-        orientation: 'any',
+        orientation: 'landscape',
         start_url: '/',
         icons: [
           { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },

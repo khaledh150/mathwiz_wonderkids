@@ -69,9 +69,19 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
     const handler = () => setIsFull(isFullscreen())
     document.addEventListener('fullscreenchange', handler)
     document.addEventListener('webkitfullscreenchange', handler)
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {})
+      }
+    } catch {}
     return () => {
       document.removeEventListener('fullscreenchange', handler)
       document.removeEventListener('webkitfullscreenchange', handler)
+      try {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock()
+        }
+      } catch {}
     }
   }, [])
 

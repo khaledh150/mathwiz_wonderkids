@@ -1,14 +1,28 @@
 export function requestFullscreen() {
   const el = document.documentElement
   try {
-    if (el.requestFullscreen) {
-      el.requestFullscreen()
-    } else if (el.webkitRequestFullscreen) {
-      el.webkitRequestFullscreen()
-    } else if (el.mozRequestFullScreen) {
-      el.mozRequestFullScreen()
-    } else if (el.msRequestFullscreen) {
-      el.msRequestFullscreen()
+    const p = el.requestFullscreen
+      ? el.requestFullscreen()
+      : el.webkitRequestFullscreen
+        ? el.webkitRequestFullscreen()
+        : el.mozRequestFullScreen
+          ? el.mozRequestFullScreen()
+          : el.msRequestFullscreen
+            ? el.msRequestFullscreen()
+            : null
+    if (p && p.then) {
+      p.then(() => lockLandscape()).catch(() => {})
+    } else {
+      lockLandscape()
+    }
+  } catch {}
+}
+
+function lockLandscape() {
+  try {
+    const so = screen.orientation
+    if (so && so.lock) {
+      so.lock('landscape').catch(() => {})
     }
   } catch {}
 }
