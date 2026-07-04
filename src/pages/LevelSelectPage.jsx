@@ -10,7 +10,7 @@ const levelNameKeys = [
   'levels.level5', 'levels.level6', 'levels.level7', 'levels.level8',
 ]
 
-export default function LevelSelectPage({ user, onSelectLevel, onPrint }) {
+export default function LevelSelectPage({ onSelectLevel, onPrint }) {
   const { t } = useLang()
 
   return (
@@ -20,11 +20,6 @@ export default function LevelSelectPage({ user, onSelectLevel, onPrint }) {
           <h1 className="text-2xl sm:text-3xl font-bold text-text mb-1">
             {t('levels.title')}
           </h1>
-          {user && (
-            <p className="text-sm text-text-muted mt-1">
-              {t('welcome.registeredAs')}: <strong className="text-primary">{user.name}</strong>
-            </p>
-          )}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
