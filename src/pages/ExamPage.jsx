@@ -258,7 +258,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
         </span>
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-2 sm:p-4 gap-1">
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-2 sm:p-4 pb-16 sm:pb-18 gap-1">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.id}
@@ -301,8 +301,8 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
         </AnimatePresence>
       </div>
 
-      <div className="no-print shrink-0 px-3 py-2 sm:py-3">
-        <div className="w-full flex items-center justify-between">
+      <div className="no-print fixed bottom-0 left-0 right-0 z-30 px-3 py-2 sm:py-3 bg-gradient-to-t from-bg via-bg/95 to-transparent pt-6">
+        <div className="w-full flex items-center justify-between max-w-xl mx-auto">
           <button
             onClick={() => goToQuestion(currentIndex - 1)}
             disabled={currentIndex === 0}
