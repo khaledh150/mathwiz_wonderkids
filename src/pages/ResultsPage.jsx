@@ -35,27 +35,27 @@ export default function ResultsPage({ examData, onBackToHome }) {
         className="w-full max-w-3xl"
       >
         {/* Landscape-optimized: horizontal layout */}
-        <div className="flex flex-col lg:flex-row gap-4 items-center lg:items-start">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center sm:items-start">
           {/* Left: Score circle + grade */}
           <div className="text-center shrink-0">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200 }}
-              className="w-24 h-24 lg:w-28 lg:h-28 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center gummy-shadow-lg mx-auto"
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center gummy-shadow-lg mx-auto"
             >
               <div className="text-center">
-                <div className="text-4xl lg:text-5xl font-bold text-white">{correct}</div>
-                <div className="text-white/80 text-sm font-medium">{t('results.outOf')} {totalQuestions}</div>
+                <div className="text-3xl sm:text-4xl font-bold text-white">{correct}</div>
+                <div className="text-white/80 text-xs sm:text-sm font-medium">{t('results.outOf')} {totalQuestions}</div>
               </div>
             </motion.div>
-            <h1 className="text-xl lg:text-2xl font-bold text-text mt-2">{t('results.title')}</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-text mt-2">{t('results.title')}</h1>
           </div>
 
           {/* Right: Stats + buttons */}
           <div className="flex-1 w-full">
             <div className="bg-white rounded-2xl p-4 gummy-shadow-lg">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { icon: CheckCircle, label: t('results.correct'), value: correct, color: 'text-green', bg: 'bg-green/10' },
                   { icon: XCircle, label: t('results.wrong'), value: wrong, color: 'text-red', bg: 'bg-red/10' },

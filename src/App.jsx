@@ -6,6 +6,7 @@ import { levelConfig } from './data/mathEngine'
 import { APP_VERSION } from './version'
 import Header from './components/Header'
 import SplashScreen from './components/SplashScreen'
+import HomeScreen from './components/HomeScreen'
 import OfflineBanner from './components/OfflineBanner'
 import LevelSelectPage from './pages/LevelSelectPage'
 import ExamPage from './pages/ExamPage'
@@ -15,6 +16,7 @@ import InAppBrowserGuard from './components/InAppBrowserGuard'
 
 const PAGES = {
   SPLASH: 'splash',
+  HOME: 'home',
   LEVELS: 'levels',
   EXAM: 'exam',
   RESULTS: 'results',
@@ -30,6 +32,23 @@ function AppContent() {
     checkVersionAndReload(APP_VERSION)
   }, [])
 
+  useEffect(() => {
+    if (page !== PAGES.SPLASH) {
+      window.history.pushState({ page }, '', `#${page}`)
+    }
+  }, [page])
+
+  useEffect(() => {
+    const onPopState = (e) => {
+      const target = e.state?.page
+      if (target === PAGES.LEVELS) setPage(PAGES.LEVELS)
+      else if (target === PAGES.RESULTS) setPage(PAGES.RESULTS)
+      else setPage(PAGES.HOME)
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
   const handleSplashDone = useCallback(() => {
     const savedExam = getExamProgress()
     if (savedExam) {
@@ -40,7 +59,7 @@ function AppContent() {
         return
       }
     }
-    setPage(PAGES.LEVELS)
+    setPage(PAGES.HOME)
   }, [])
 
   function handleSelectLevel(levelCfg) {
@@ -53,7 +72,7 @@ function AppContent() {
     setPage(PAGES.RESULTS)
   }
 
-  const showHeader = page !== PAGES.SPLASH && page !== PAGES.EXAM
+  const showHeader = page !== PAGES.SPLASH && page !== PAGES.HOME && page !== PAGES.EXAM
 
   return (
     <div className="min-h-screen-safe flex flex-col bg-bg">
@@ -72,10 +91,15 @@ function AppContent() {
             <SplashScreen onDone={handleSplashDone} />
           )}
 
+          {page === PAGES.HOME && (
+            <HomeScreen onPractice={() => setPage(PAGES.LEVELS)} />
+          )}
+
           {page === PAGES.LEVELS && (
             <LevelSelectPage
               onSelectLevel={handleSelectLevel}
               onPrint={() => setPage(PAGES.PRINT)}
+              onBack={() => setPage(PAGES.HOME)}
             />
           )}
 
@@ -92,7 +116,7 @@ function AppContent() {
           {page === PAGES.RESULTS && examResults && (
             <ResultsPage
               examData={examResults}
-              onBackToHome={() => setPage(PAGES.LEVELS)}
+              onBackToHome={() => setPage(PAGES.HOME)}
             />
           )}
 
@@ -102,7 +126,7 @@ function AppContent() {
         </motion.div>
       </AnimatePresence>
 
-      {page !== PAGES.SPLASH && page !== PAGES.EXAM && (
+      {page !== PAGES.SPLASH && page !== PAGES.HOME && page !== PAGES.EXAM && (
         <footer className="no-print text-center py-3 text-text-muted text-xs">
           <p>&copy; {new Date().getFullYear()} Wonder Kids Co. All rights reserved.</p>
           <p className="mt-0.5">v{APP_VERSION}</p>

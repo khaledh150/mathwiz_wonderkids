@@ -3,20 +3,28 @@ import { useLang } from '../i18n/LanguageContext'
 import { levelConfig } from '../data/mathEngine'
 import { playSound } from '../utils/sound'
 import { requestFullscreen } from '../utils/fullscreen'
-import { Clock, HelpCircle, ChevronRight, Printer } from 'lucide-react'
+import { Clock, HelpCircle, ChevronRight, Printer, ArrowLeft } from 'lucide-react'
 
 const levelNameKeys = [
   'levels.level1', 'levels.level2', 'levels.level3', 'levels.level4',
   'levels.level5', 'levels.level6', 'levels.level7', 'levels.level8',
 ]
 
-export default function LevelSelectPage({ onSelectLevel, onPrint }) {
+export default function LevelSelectPage({ onSelectLevel, onPrint, onBack }) {
   const { t } = useLang()
 
   return (
     <div className="flex-1 p-4 overflow-auto">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 relative">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="absolute left-0 top-0 flex items-center gap-1 px-3 py-2 rounded-xl text-text-light font-bold text-sm active:scale-95 transition-transform hover:bg-bg gummy-press"
+            >
+              <ArrowLeft size={16} /> {t('nav.home')}
+            </button>
+          )}
           <h1 className="text-2xl sm:text-3xl font-bold text-text mb-1">
             {t('levels.title')}
           </h1>
