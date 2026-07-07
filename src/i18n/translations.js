@@ -8,6 +8,11 @@ export const translations = {
       loading: 'Loading...',
       preparing: 'Preparing your challenge...',
     },
+    home: {
+      practice: 'Practice',
+      competition: 'Competition',
+      locked: 'Opens when the admin starts the lobby',
+    },
     nav: {
       home: 'Home',
       levels: 'Levels',
@@ -122,6 +127,11 @@ export const translations = {
       version: 'เวอร์ชัน',
       loading: 'กำลังโหลด...',
       preparing: 'กำลังเตรียมความท้าทายของคุณ...',
+    },
+    home: {
+      practice: 'ฝึกซ้อม',
+      competition: 'การแข่งขัน',
+      locked: 'เปิดเมื่อผู้ดูแลเริ่มห้องรอ',
     },
     nav: {
       home: 'หน้าหลัก',

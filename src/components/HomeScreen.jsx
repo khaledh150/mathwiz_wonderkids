@@ -13,14 +13,14 @@ export default function HomeScreen({ onPractice }) {
     let mounted = true
     async function check() {
       try {
-        const res = await fetch('https://rlsuwlvzeaioanudtmxp.supabase.co/rest/v1/competition_state?select=is_unlocked&id=in.(english,math)', {
+        const res = await fetch('https://rlsuwlvzeaioanudtmxp.supabase.co/rest/v1/competition_state?select=is_unlocked&id=eq.math', {
           headers: {
             'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsc3V3bHZ6ZWFpb2FudWR0bXhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMjQwNjIsImV4cCI6MjA2NDkwMDA2Mn0.D0dOaxPc_QLHAY01Y__RKGJ-JXhqjRFcQZAlGF3pcRk',
           },
         })
         if (!res.ok) return
         const data = await res.json()
-        if (mounted) setUnlocked(data.some(s => s.is_unlocked))
+        if (mounted) setUnlocked(data.length > 0 && !!data[0].is_unlocked)
       } catch {}
     }
     check()
