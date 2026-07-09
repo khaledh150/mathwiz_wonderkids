@@ -4,6 +4,9 @@ import { generateExam, levelConfig } from '../data/mathEngine'
 import { renderQuestion } from '../utils/fractionRenderer'
 import { ArrowLeft, Printer, Key } from 'lucide-react'
 
+const QUESTIONS_PER_PAGE = 100
+const QUESTIONS_PER_COL = 50
+
 export default function PrintExamPage({ onBack }) {
   const { t, lang } = useLang()
   const [selectedLevel, setSelectedLevel] = useState(null)
@@ -47,10 +50,18 @@ export default function PrintExamPage({ onBack }) {
   }
 
   const today = new Date().toLocaleDateString()
+  const totalPages = Math.ceil(examData.length / QUESTIONS_PER_PAGE)
+  const pages = []
+  for (let p = 0; p < totalPages; p++) {
+    const start = p * QUESTIONS_PER_PAGE
+    const pageQuestions = examData.slice(start, start + QUESTIONS_PER_PAGE)
+    const leftCol = pageQuestions.slice(0, QUESTIONS_PER_COL)
+    const rightCol = pageQuestions.slice(QUESTIONS_PER_COL)
+    pages.push({ leftCol, rightCol, startNum: start + 1, pageNum: p + 1 })
+  }
 
   return (
     <div className="flex-1">
-      {/* Top controls */}
       <div className="no-print p-4 flex items-center justify-between max-w-3xl mx-auto">
         <button onClick={() => setExamData(null)} className="flex items-center gap-1 text-text-light hover:text-text">
           <ArrowLeft size={18} /> {t('common.back')}
@@ -74,54 +85,85 @@ export default function PrintExamPage({ onBack }) {
         </div>
       </div>
 
-      {/* Printable Exam Sheet */}
-      <div className="max-w-3xl mx-auto p-8 bg-white" style={{ fontFamily: 'Arial, sans-serif' }}>
-        <div className="text-center mb-6 border-b-2 border-black pb-4">
-          <h1 className="text-2xl font-bold">MathWiz Competition</h1>
-          <p className="text-lg">{t('levels.level')} {selectedLevel}</p>
-          <div className="flex justify-between mt-4 text-sm">
-            <span>{t('print.studentName')} _________________________</span>
-            <span>{t('print.date')} {today}</span>
+      {pages.map((page, pi) => (
+        <div
+          key={pi}
+          className="print-page bg-white mx-auto"
+          style={{
+            fontFamily: 'Arial, sans-serif',
+            width: '210mm',
+            minHeight: '297mm',
+            padding: '12mm 15mm',
+            boxSizing: 'border-box',
+            pageBreakAfter: pi < pages.length - 1 ? 'always' : 'auto',
+          }}
+        >
+          <div className="text-center mb-3 border-b border-black pb-2">
+            <h1 className="text-lg font-bold leading-tight">MathWiz Competition</h1>
+            <p className="text-sm">{t('levels.level')} {selectedLevel}</p>
+            <div className="flex justify-between mt-2 text-xs">
+              <span>{t('print.studentName')} _________________________</span>
+              <span>{t('print.date')} {today}</span>
+            </div>
+          </div>
+
+          <div className="flex gap-6" style={{ fontSize: '11pt' }}>
+            <div className="flex-1">
+              {page.leftCol.map((q, i) => {
+                const num = page.startNum + i
+                const text = lang === 'en' && q.questionEn ? q.questionEn : q.question
+                return (
+                  <div key={q.id} className="flex items-center gap-1 py-[2px]">
+                    <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
+                    <span className="font-medium">{renderQuestion(text)}</span>
+                    <span className="ml-auto font-bold text-gray-400">= ______</span>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="w-px bg-gray-300 shrink-0" />
+            <div className="flex-1">
+              {page.rightCol.map((q, i) => {
+                const num = page.startNum + QUESTIONS_PER_COL + i
+                const text = lang === 'en' && q.questionEn ? q.questionEn : q.question
+                return (
+                  <div key={q.id} className="flex items-center gap-1 py-[2px]">
+                    <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
+                    <span className="font-medium">{renderQuestion(text)}</span>
+                    <span className="ml-auto font-bold text-gray-400">= ______</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="text-center text-xs text-gray-400 mt-2 border-t border-gray-200 pt-1">
+            {t('print.page')} {page.pageNum} / {totalPages} &mdash; &copy; Wonder Kids Co.
           </div>
         </div>
+      ))}
 
-        <p className="text-sm mb-6 italic">{t('print.instructions')}</p>
-
-        <div className="space-y-4">
-          {examData.map((q, i) => (
-            <div key={q.id} className="flex gap-3 items-start">
-              <span className="font-bold min-w-[2rem] text-right">{i + 1}.</span>
-              <div className="flex-1">
-                <p className="font-bold text-lg mb-1">{renderQuestion(lang === 'en' && q.questionEn ? q.questionEn : q.question)}</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {q.choices.map((choice, ci) => (
-                    <span key={ci} className="text-sm">
-                      {['A', 'B', 'C', 'D'][ci]}. {choice}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Answer Key - separate section toggled by button */}
       {showAnswerKey && (
-        <div className="max-w-3xl mx-auto p-8 bg-white mt-4 border-t-4 border-orange" style={{ fontFamily: 'Arial, sans-serif' }}>
-          <h2 className="text-xl font-bold mb-4 border-b-2 border-black pb-2">
-            {t('print.answerKey')} - {t('levels.level')} {selectedLevel}
+        <div
+          className="print-page bg-white mx-auto mt-4"
+          style={{
+            fontFamily: 'Arial, sans-serif',
+            width: '210mm',
+            padding: '12mm 15mm',
+            boxSizing: 'border-box',
+            pageBreakBefore: 'always',
+          }}
+        >
+          <h2 className="text-lg font-bold mb-3 border-b-2 border-black pb-2">
+            {t('print.answerKey')} &mdash; {t('levels.level')} {selectedLevel}
           </h2>
-          <div className="grid grid-cols-5 gap-2 text-sm">
-            {examData.map((q, i) => {
-              const correctIndex = q.choices.indexOf(q.correctAnswer)
-              return (
-                <div key={q.id} className="flex gap-1">
-                  <span className="font-bold">{i + 1}.</span>
-                  <span>{['A', 'B', 'C', 'D'][correctIndex]} ({q.correctAnswer})</span>
-                </div>
-              )
-            })}
+          <div className="grid grid-cols-10 gap-x-3 gap-y-0.5 text-xs">
+            {examData.map((q, i) => (
+              <div key={q.id} className="flex gap-1">
+                <span className="font-bold">{i + 1}.</span>
+                <span>{q.correctAnswer}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}
