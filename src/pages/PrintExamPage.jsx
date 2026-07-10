@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { useLang } from '../i18n/LanguageContext'
 import { generateExam, levelConfig } from '../data/mathEngine'
-import { renderQuestion } from '../utils/fractionRenderer'
 import { ArrowLeft, Printer, Key } from 'lucide-react'
+
+function stripAnswer(text) {
+  return text.replace(/\s*=\s*\?\s*$/, '').replace(/\s*=\s*$/, '').trim()
+}
 
 const QUESTIONS_PER_PAGE = 100
 const QUESTIONS_PER_COL = 50
@@ -115,8 +118,7 @@ export default function PrintExamPage({ onBack }) {
                 return (
                   <div key={q.id} className="flex items-center gap-1 py-[2px]">
                     <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
-                    <span className="font-medium">{renderQuestion(text)}</span>
-                    <span className="ml-auto font-bold text-gray-400">= ______</span>
+                    <span className="font-medium">{stripAnswer(text)}</span>
                   </div>
                 )
               })}
@@ -129,8 +131,7 @@ export default function PrintExamPage({ onBack }) {
                 return (
                   <div key={q.id} className="flex items-center gap-1 py-[2px]">
                     <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
-                    <span className="font-medium">{renderQuestion(text)}</span>
-                    <span className="ml-auto font-bold text-gray-400">= ______</span>
+                    <span className="font-medium">{stripAnswer(text)}</span>
                   </div>
                 )
               })}
