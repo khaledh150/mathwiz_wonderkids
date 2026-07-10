@@ -3,8 +3,8 @@ import { useLang } from '../i18n/LanguageContext'
 import { generateExam, levelConfig } from '../data/mathEngine'
 import { ArrowLeft, Printer, Key } from 'lucide-react'
 
-function stripAnswer(text) {
-  return text.replace(/\s*=\s*\?\s*$/, '').replace(/\s*=\s*$/, '').trim()
+function stripQuestionMark(text) {
+  return text.replace(/\s*\?\s*$/, '').trim()
 }
 
 const QUESTIONS_PER_PAGE = 100
@@ -52,7 +52,6 @@ export default function PrintExamPage({ onBack }) {
     )
   }
 
-  const today = new Date().toLocaleDateString()
   const totalPages = Math.ceil(examData.length / QUESTIONS_PER_PAGE)
   const pages = []
   for (let p = 0; p < totalPages; p++) {
@@ -106,7 +105,7 @@ export default function PrintExamPage({ onBack }) {
             <p className="text-sm">{t('levels.level')} {selectedLevel}</p>
             <div className="flex justify-between mt-2 text-xs">
               <span>{t('print.studentName')} _________________________</span>
-              <span>{t('print.date')} {today}</span>
+              <span>{t('print.date')} _____________</span>
             </div>
           </div>
 
@@ -118,7 +117,7 @@ export default function PrintExamPage({ onBack }) {
                 return (
                   <div key={q.id} className="flex items-center gap-1 py-[2px]">
                     <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
-                    <span className="font-medium">{stripAnswer(text)}</span>
+                    <span className="font-medium">{stripQuestionMark(text)}</span>
                   </div>
                 )
               })}
@@ -131,7 +130,7 @@ export default function PrintExamPage({ onBack }) {
                 return (
                   <div key={q.id} className="flex items-center gap-1 py-[2px]">
                     <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
-                    <span className="font-medium">{stripAnswer(text)}</span>
+                    <span className="font-medium">{stripQuestionMark(text)}</span>
                   </div>
                 )
               })}
@@ -139,7 +138,7 @@ export default function PrintExamPage({ onBack }) {
           </div>
 
           <div className="text-center text-xs text-gray-400 mt-2 border-t border-gray-200 pt-1">
-            {t('print.page')} {page.pageNum} / {totalPages} &mdash; &copy; Wonder Kids Co.
+            {t('print.page')} {page.pageNum} / {totalPages} &mdash; &copy; Wonder Kids Co., LTD.
           </div>
         </div>
       ))}
