@@ -103,24 +103,24 @@ export default function PrintExamPage({ onBack }) {
             pageBreakAfter: pi < pages.length - 1 ? 'always' : 'auto',
           }}
         >
-          <div className="text-center mb-3 border-b border-black pb-2">
-            <h1 className="text-lg font-bold leading-tight">MathWiz Competition</h1>
-            <p className="text-sm">{t('levels.level')} {selectedLevel}</p>
-            <div className="flex justify-between mt-2 text-xs">
+          <div className="text-center mb-1 border-b border-black pb-1">
+            <h1 className="print-title font-bold leading-tight">MathWiz Competition</h1>
+            <p className="print-subtitle">{t('levels.level')} {selectedLevel}</p>
+            <div className="flex justify-between mt-1 print-small">
               <span>{t('print.studentName')} _________________________</span>
-              <span>{t('print.date')}      /      /</span>
+              <span>{t('print.date')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/</span>
             </div>
           </div>
 
-          <div className="flex gap-3 sm:gap-6 text-xs sm:text-sm md:text-base">
+          <div className="flex gap-3 sm:gap-6 print-questions">
             <div className="flex-1">
               {page.leftCol.map((q, i) => {
                 const num = page.startNum + i
                 const text = lang === 'en' && q.questionEn ? q.questionEn : q.question
                 return (
-                  <div key={q.id} className="flex items-center gap-1 py-[2px]">
-                    <span className="font-bold text-right shrink-0" style={{ minWidth: '24px' }}>{num}.</span>
-                    <span className="font-medium">{stripQuestionMark(text)}</span>
+                  <div key={q.id} className="print-q-row">
+                    <span className="print-q-num">{num}.</span>
+                    <span>{stripQuestionMark(text)}</span>
                   </div>
                 )
               })}
@@ -131,16 +131,16 @@ export default function PrintExamPage({ onBack }) {
                 const num = page.startNum + QUESTIONS_PER_COL + i
                 const text = lang === 'en' && q.questionEn ? q.questionEn : q.question
                 return (
-                  <div key={q.id} className="flex items-center gap-1 py-[2px]">
-                    <span className="font-bold text-right shrink-0" style={{ minWidth: '24px' }}>{num}.</span>
-                    <span className="font-medium">{stripQuestionMark(text)}</span>
+                  <div key={q.id} className="print-q-row">
+                    <span className="print-q-num">{num}.</span>
+                    <span>{stripQuestionMark(text)}</span>
                   </div>
                 )
               })}
             </div>
           </div>
 
-          <div className="text-center text-xs text-gray-400 mt-2 border-t border-gray-200 pt-1">
+          <div className="text-center print-small text-gray-400 mt-1 border-t border-gray-200 pt-0.5">
             {t('print.page')} {page.pageNum} / {totalPages} &mdash; &copy; Wonder Kids Co., LTD.
           </div>
         </div>
