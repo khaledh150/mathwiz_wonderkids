@@ -103,13 +103,10 @@ export default function PrintExamPage({ onBack }) {
             pageBreakAfter: pi < pages.length - 1 ? 'always' : 'auto',
           }}
         >
-          <div className="text-center mb-1 border-b border-black pb-1">
-            <h1 className="print-title font-bold leading-tight">MathWiz Competition</h1>
-            <p className="print-subtitle">{t('levels.level')} {selectedLevel}</p>
-            <div className="flex justify-between mt-1 print-small">
-              <span>{t('print.studentName')} _________________________</span>
-              <span>{t('print.date')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/</span>
-            </div>
+          <div className="flex items-center justify-between border-b border-black pb-1 mb-1 print-small">
+            <span className="font-bold print-title">Math Competition &mdash; {t('levels.level')} {selectedLevel}</span>
+            <span>{t('print.studentName')} ________________</span>
+            <span>{t('print.date')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/</span>
           </div>
 
           <div className="flex gap-3 sm:gap-6 print-questions">
@@ -140,9 +137,6 @@ export default function PrintExamPage({ onBack }) {
             </div>
           </div>
 
-          <div className="text-center print-small text-gray-400 mt-1 border-t border-gray-200 pt-0.5">
-            {t('print.page')} {page.pageNum} / {totalPages} &mdash; &copy; Wonder Kids Co., LTD.
-          </div>
         </div>
       ))}
 
