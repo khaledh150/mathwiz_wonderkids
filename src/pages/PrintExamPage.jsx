@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useLang } from '../i18n/LanguageContext'
 import { generateExam, levelConfig } from '../data/mathEngine'
 import { ArrowLeft, Printer, Key } from 'lucide-react'
@@ -15,6 +15,7 @@ export default function PrintExamPage({ onBack }) {
   const [selectedLevel, setSelectedLevel] = useState(null)
   const [examData, setExamData] = useState(null)
   const [showAnswerKey, setShowAnswerKey] = useState(false)
+  const answerKeyRef = useRef(null)
 
   function handleGenerate(level) {
     const questions = generateExam(level, levelConfig[level - 1].questions)
@@ -70,7 +71,11 @@ export default function PrintExamPage({ onBack }) {
         </button>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowAnswerKey(!showAnswerKey)}
+            onClick={() => {
+              const next = !showAnswerKey
+              setShowAnswerKey(next)
+              if (next) setTimeout(() => answerKeyRef.current?.scrollIntoView({ behavior: 'smooth' }), 100)
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold gummy-shadow gummy-press ${
               showAnswerKey ? 'bg-orange text-white' : 'bg-white text-orange'
             }`}
@@ -90,12 +95,10 @@ export default function PrintExamPage({ onBack }) {
       {pages.map((page, pi) => (
         <div
           key={pi}
-          className="print-page bg-white mx-auto"
+          className="print-page bg-white mx-auto max-w-3xl"
           style={{
             fontFamily: 'Arial, sans-serif',
-            width: '210mm',
-            minHeight: '297mm',
-            padding: '12mm 15mm',
+            padding: '16px',
             boxSizing: 'border-box',
             pageBreakAfter: pi < pages.length - 1 ? 'always' : 'auto',
           }}
@@ -109,14 +112,14 @@ export default function PrintExamPage({ onBack }) {
             </div>
           </div>
 
-          <div className="flex gap-6" style={{ fontSize: '11pt' }}>
+          <div className="flex gap-3 sm:gap-6 text-xs sm:text-sm md:text-base">
             <div className="flex-1">
               {page.leftCol.map((q, i) => {
                 const num = page.startNum + i
                 const text = lang === 'en' && q.questionEn ? q.questionEn : q.question
                 return (
                   <div key={q.id} className="flex items-center gap-1 py-[2px]">
-                    <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
+                    <span className="font-bold text-right shrink-0" style={{ minWidth: '24px' }}>{num}.</span>
                     <span className="font-medium">{stripQuestionMark(text)}</span>
                   </div>
                 )
@@ -129,7 +132,7 @@ export default function PrintExamPage({ onBack }) {
                 const text = lang === 'en' && q.questionEn ? q.questionEn : q.question
                 return (
                   <div key={q.id} className="flex items-center gap-1 py-[2px]">
-                    <span className="font-bold text-right" style={{ minWidth: '28px', fontSize: '10pt' }}>{num}.</span>
+                    <span className="font-bold text-right shrink-0" style={{ minWidth: '24px' }}>{num}.</span>
                     <span className="font-medium">{stripQuestionMark(text)}</span>
                   </div>
                 )
@@ -145,11 +148,11 @@ export default function PrintExamPage({ onBack }) {
 
       {showAnswerKey && (
         <div
-          className="print-page bg-white mx-auto mt-4"
+          ref={answerKeyRef}
+          className="print-page bg-white mx-auto mt-4 max-w-3xl"
           style={{
             fontFamily: 'Arial, sans-serif',
-            width: '210mm',
-            padding: '12mm 15mm',
+            padding: '16px',
             boxSizing: 'border-box',
             pageBreakBefore: 'always',
           }}
