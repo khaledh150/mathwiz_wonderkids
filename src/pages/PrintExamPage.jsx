@@ -105,7 +105,7 @@ export default function PrintExamPage({ onBack }) {
             <p className="text-sm">{t('levels.level')} {selectedLevel}</p>
             <div className="flex justify-between mt-2 text-xs">
               <span>{t('print.studentName')} _________________________</span>
-              <span>{t('print.date')} _____________</span>
+              <span>{t('print.date')}      /      /</span>
             </div>
           </div>
 
