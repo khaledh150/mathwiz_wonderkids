@@ -79,7 +79,7 @@ export default function SplashScreen({ onDone }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        Math Practice
+        Practice & Competition
       </motion.p>
 
       <motion.div
