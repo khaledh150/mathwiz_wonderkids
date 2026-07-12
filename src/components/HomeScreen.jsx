@@ -47,7 +47,7 @@ export default function HomeScreen({ onPractice }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        MathWiz
+        Math
       </motion.h1>
 
       <div className="flex flex-col gap-4 md:gap-5 mt-8 md:mt-10 w-full max-w-xs sm:max-w-sm md:max-w-md">

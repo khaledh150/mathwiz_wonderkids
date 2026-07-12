@@ -14,9 +14,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,webp,png,mp3,wav,woff2,svg,ico,json}'],
       },
       manifest: {
-        name: 'MathWiz Competition',
-        short_name: 'MathWiz',
-        description: 'WonderKids MathWiz - Fun Math Competition!',
+        name: 'Math',
+        short_name: 'Math',
+        description: 'Math Practice & Competition',
         theme_color: '#FFF5F0',
         background_color: '#FFF5F0',
         display: 'standalone',

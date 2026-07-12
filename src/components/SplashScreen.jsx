@@ -70,7 +70,7 @@ export default function SplashScreen({ onDone }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        MathWiz
+        Math
       </motion.h1>
 
       <motion.p
@@ -79,7 +79,7 @@ export default function SplashScreen({ onDone }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        Think Fast, Score Big!
+        Math Practice
       </motion.p>
 
       <motion.div

@@ -1,9 +1,9 @@
 export const translations = {
   en: {
     app: {
-      title: 'MathWiz',
+      title: 'Math',
       subtitle: 'Math Competition',
-      tagline: 'Think Fast, Score Big!',
+      tagline: 'Math Practice',
       version: 'Version',
       loading: 'Loading...',
       preparing: 'Preparing your challenge...',
@@ -22,7 +22,7 @@ export const translations = {
       print: 'Print Exam',
     },
     welcome: {
-      greeting: 'Welcome, Math Wizard!',
+      greeting: 'Welcome!',
       description: 'Test your math skills in a fun and exciting competition!',
       enterName: 'Enter your name',
       enterCode: 'Enter competition code',
@@ -134,7 +134,7 @@ export const translations = {
   },
   th: {
     app: {
-      title: 'MathWiz',
+      title: 'Math',
       subtitle: 'การแข่งขันคณิตศาสตร์',
       tagline: 'คิดเร็ว คะแนนสูง!',
       version: 'เวอร์ชัน',
