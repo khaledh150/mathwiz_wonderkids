@@ -114,9 +114,12 @@ export default function PracticePage({ levelConfig: config, onExit }) {
         </button>
       </div>
 
-      <div className="no-print shrink-0 px-3 md:px-5 -mt-0.5 mb-1">
+      <div className="no-print flex items-center justify-between px-3 md:px-5 py-0.5 shrink-0">
         <span className="text-sm md:text-base font-bold text-secondary">
           Q{currentIndex + 1}/{questions.length}
+        </span>
+        <span className="inline-flex items-center bg-purple text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+          Practice
         </span>
       </div>
 
