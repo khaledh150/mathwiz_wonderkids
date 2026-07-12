@@ -29,8 +29,9 @@ function lockLandscape() {
 
 export function exitFullscreen() {
   try {
+    if (!isFullscreen()) return
     if (document.exitFullscreen) {
-      document.exitFullscreen()
+      document.exitFullscreen().catch(() => {})
     } else if (document.webkitExitFullscreen) {
       document.webkitExitFullscreen()
     } else if (document.mozCancelFullScreen) {

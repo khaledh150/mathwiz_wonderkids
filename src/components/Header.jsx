@@ -20,21 +20,21 @@ export default function Header({ showControls = true }) {
   if (!showControls) return null
 
   return (
-    <div className="no-print fixed top-3 right-3 z-50 flex items-center gap-2">
+    <div className="no-print fixed top-3 right-3 md:top-5 md:right-5 z-50 flex items-center gap-2 md:gap-3">
       <button
         onClick={toggleLang}
-        className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple-500"
+        className="p-2 md:p-3 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple-500"
         aria-label="Toggle language"
       >
-        <Globe size={18} />
+        <Globe size={18} className="md:!w-6 md:!h-6" />
       </button>
 
       <button
         onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
-        className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple-500"
+        className="p-2 md:p-3 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple-500"
         aria-label="Toggle fullscreen"
       >
-        {isFull ? <Minimize size={18} /> : <Maximize size={18} />}
+        {isFull ? <Minimize size={18} className="md:!w-6 md:!h-6" /> : <Maximize size={18} className="md:!w-6 md:!h-6" />}
       </button>
     </div>
   )

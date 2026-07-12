@@ -65,7 +65,7 @@ export default function SplashScreen({ onDone }) {
       </div>
 
       <motion.h1
-        className="text-4xl sm:text-6xl font-extrabold mt-4 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent"
+        className="text-4xl sm:text-6xl md:text-7xl font-extrabold mt-4 md:mt-6 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent"
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -74,7 +74,7 @@ export default function SplashScreen({ onDone }) {
       </motion.h1>
 
       <motion.p
-        className="text-lg sm:text-xl text-purple-400 mt-1 font-semibold"
+        className="text-lg sm:text-xl md:text-2xl text-purple-400 mt-1 font-semibold"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8 }}
@@ -99,7 +99,7 @@ export default function SplashScreen({ onDone }) {
       </motion.div>
 
       <motion.button
-        className="mt-5 px-10 py-3.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-bold rounded-full text-xl shadow-lg active:scale-95 transition-transform"
+        className="mt-5 md:mt-7 px-10 md:px-14 py-3.5 md:py-4.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-bold rounded-full text-xl md:text-2xl shadow-lg active:scale-95 transition-transform"
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1.5 }}

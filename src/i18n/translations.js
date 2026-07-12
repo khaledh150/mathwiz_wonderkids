@@ -47,6 +47,15 @@ export const translations = {
       minutes: 'minutes',
       startExam: 'Start Exam',
     },
+    mode: {
+      practice: 'Practice',
+      test: 'Test',
+      practiceDesc: 'Learn & retry',
+      testDesc: '5 min quiz',
+    },
+    practice: {
+      tryAgain: 'Try Again',
+    },
     exam: {
       question: 'Question',
       of: 'of',
@@ -62,6 +71,9 @@ export const translations = {
       timeUp: 'Time\'s Up!',
       submitting: 'Submitting your answers...',
       confirmExit: 'Are you sure you want to exit? Your progress will be lost.',
+      exitTitle: 'Leave?',
+      exitMessage: 'Your progress will be lost if you leave now.',
+      exitConfirm: 'Leave',
     },
     results: {
       title: 'Great Job!',
@@ -168,6 +180,15 @@ export const translations = {
       minutes: 'นาที',
       startExam: 'เริ่มสอบ',
     },
+    mode: {
+      practice: 'ฝึกซ้อม',
+      test: 'ทดสอบ',
+      practiceDesc: 'เรียนรู้และลองใหม่',
+      testDesc: 'แบบทดสอบ 5 นาที',
+    },
+    practice: {
+      tryAgain: 'ลองอีกครั้ง',
+    },
     exam: {
       question: 'ข้อที่',
       of: 'จาก',
@@ -183,6 +204,9 @@ export const translations = {
       timeUp: 'หมดเวลา!',
       submitting: 'กำลังส่งคำตอบของคุณ...',
       confirmExit: 'คุณแน่ใจหรือไม่ว่าต้องการออก? ความคืบหน้าจะหายไป',
+      exitTitle: 'ออกหรือไม่?',
+      exitMessage: 'ความคืบหน้าจะหายไปหากคุณออกตอนนี้',
+      exitConfirm: 'ออก',
     },
     results: {
       title: 'เก่งมาก!',

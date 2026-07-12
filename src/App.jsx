@@ -9,6 +9,8 @@ import SplashScreen from './components/SplashScreen'
 import HomeScreen from './components/HomeScreen'
 import OfflineBanner from './components/OfflineBanner'
 import LevelSelectPage from './pages/LevelSelectPage'
+import ModeSelectPage from './pages/ModeSelectPage'
+import PracticePage from './pages/PracticePage'
 import ExamPage from './pages/ExamPage'
 import ResultsPage from './pages/ResultsPage'
 import PrintExamPage from './pages/PrintExamPage'
@@ -18,6 +20,8 @@ const PAGES = {
   SPLASH: 'splash',
   HOME: 'home',
   LEVELS: 'levels',
+  MODE: 'mode',
+  PRACTICE: 'practice',
   EXAM: 'exam',
   RESULTS: 'results',
   PRINT: 'print',
@@ -27,6 +31,7 @@ function AppContent() {
   const [page, setPage] = useState(PAGES.SPLASH)
   const [selectedLevel, setSelectedLevel] = useState(null)
   const [examResults, setExamResults] = useState(null)
+  const [examKey, setExamKey] = useState(0)
 
   useEffect(() => {
     checkVersionAndReload(APP_VERSION)
@@ -42,6 +47,7 @@ function AppContent() {
     const onPopState = (e) => {
       const target = e.state?.page
       if (target === PAGES.LEVELS) setPage(PAGES.LEVELS)
+      else if (target === PAGES.MODE) setPage(PAGES.MODE)
       else if (target === PAGES.RESULTS) setPage(PAGES.RESULTS)
       else setPage(PAGES.HOME)
     }
@@ -64,7 +70,15 @@ function AppContent() {
 
   function handleSelectLevel(levelCfg) {
     setSelectedLevel(levelCfg)
-    setPage(PAGES.EXAM)
+    setPage(PAGES.MODE)
+  }
+
+  function handleSelectMode(mode) {
+    if (mode === 'practice') {
+      setPage(PAGES.PRACTICE)
+    } else {
+      setPage(PAGES.EXAM)
+    }
   }
 
   function handleExamFinish(results) {
@@ -72,7 +86,7 @@ function AppContent() {
     setPage(PAGES.RESULTS)
   }
 
-  const showHeader = page !== PAGES.SPLASH && page !== PAGES.HOME && page !== PAGES.EXAM
+  const showHeader = page !== PAGES.SPLASH && page !== PAGES.HOME && page !== PAGES.EXAM && page !== PAGES.PRACTICE
 
   return (
     <div className="min-h-screen-safe flex flex-col bg-bg">
@@ -103,13 +117,29 @@ function AppContent() {
             />
           )}
 
+          {page === PAGES.MODE && selectedLevel && (
+            <ModeSelectPage
+              levelConfig={selectedLevel}
+              onSelectMode={handleSelectMode}
+              onBack={() => setPage(PAGES.LEVELS)}
+            />
+          )}
+
+          {page === PAGES.PRACTICE && selectedLevel && (
+            <PracticePage
+              key={`practice-${selectedLevel.level}`}
+              levelConfig={selectedLevel}
+              onExit={() => setPage(PAGES.MODE)}
+            />
+          )}
+
           {page === PAGES.EXAM && selectedLevel && (
             <ExamPage
-              key={`exam-${selectedLevel.level}`}
+              key={`exam-${selectedLevel.level}-${examKey}`}
               levelConfig={selectedLevel}
               user={null}
               onFinish={handleExamFinish}
-              onExit={() => setPage(PAGES.LEVELS)}
+              onExit={() => setPage(PAGES.MODE)}
             />
           )}
 
@@ -117,6 +147,7 @@ function AppContent() {
             <ResultsPage
               examData={examResults}
               onBackToHome={() => setPage(PAGES.HOME)}
+              onTryAgain={() => { setExamKey(k => k + 1); setPage(PAGES.EXAM) }}
             />
           )}
 
@@ -126,8 +157,8 @@ function AppContent() {
         </motion.div>
       </AnimatePresence>
 
-      {page !== PAGES.SPLASH && page !== PAGES.HOME && page !== PAGES.EXAM && (
-        <footer className="no-print text-center py-3 text-text-muted text-xs">
+      {page !== PAGES.SPLASH && page !== PAGES.HOME && page !== PAGES.EXAM && page !== PAGES.PRACTICE && (
+        <footer className="no-print text-center py-3 md:py-4 text-text-muted text-xs md:text-sm">
           <p>&copy; {new Date().getFullYear()} Wonder Kids Co. All rights reserved.</p>
           <p className="mt-0.5">v{APP_VERSION}</p>
         </footer>

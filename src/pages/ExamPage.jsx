@@ -8,7 +8,8 @@ import { saveExamAnswers, saveExamProgress, getExamProgress, clearExamProgress }
 import { toggleFullscreen, isFullscreen, exitFullscreen } from '../utils/fullscreen'
 import { renderQuestion } from '../utils/fractionRenderer'
 import CountdownOverlay from '../components/CountdownOverlay'
-import { Clock, ChevronRight, ChevronLeft, Globe, Maximize, Minimize, LogOut } from 'lucide-react'
+import ExitConfirmDialog from '../components/ExitConfirmDialog'
+import { Clock, Globe, Maximize, Minimize, LogOut } from 'lucide-react'
 
 export default function ExamPage({ levelConfig: config, user, onFinish, onExit }) {
   const EXAM_DURATION_SEC = config.timeMinutes * 60
@@ -28,14 +29,19 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
     return generateExam(config.level, config.questions)
   })
   const [currentIndex, setCurrentIndex] = useState(isResuming ? savedProgress.currentIndex : 0)
-  const [selectedAnswer, setSelectedAnswer] = useState(null)
+  const [answered, setAnswered] = useState(false)
+  const [wrongPick, setWrongPick] = useState(null)
   const [isFull, setIsFull] = useState(false)
   const [displaySeconds, setDisplaySeconds] = useState(EXAM_DURATION_SEC)
+  const [showExitDialog, setShowExitDialog] = useState(false)
   const answersRef = useRef(isResuming ? (savedProgress.answers || {}) : {})
+  const correctCountRef = useRef(0)
+  const wrongCountRef = useRef(0)
   const deadlineRef = useRef(null)
   const intervalRef = useRef(null)
   const finishedRef = useRef(false)
   const saveTimeoutRef = useRef(null)
+  const advanceTimeoutRef = useRef(null)
 
   function startCountdown(deadlineMs) {
     deadlineRef.current = deadlineMs
@@ -57,11 +63,11 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
       const deadline = Date.now() + (EXAM_DURATION_SEC * 1000 - elapsedMs)
       setDisplaySeconds(Math.max(0, Math.floor((deadline - Date.now()) / 1000)))
       startCountdown(deadline)
-      setSelectedAnswer(answersRef.current[questions[currentIndex]?.id] ?? null)
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+      if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
     }
   }, [])
 
@@ -108,6 +114,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
   function finishExam() {
     if (intervalRef.current) clearInterval(intervalRef.current)
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
     clearExamProgress()
     const elapsed = getElapsedSeconds()
     const results = questions.map((q) => ({
@@ -153,37 +160,38 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
     })
   }
 
-  function goToQuestion(index) {
-    if (index < 0 || index >= questions.length) return
-    setSelectedAnswer(answersRef.current[questions[index].id] ?? null)
-    setCurrentIndex(index)
-    debouncedSave()
-  }
-
-  function handleNext() {
-    if (selectedAnswer !== null) {
-      answersRef.current[currentQuestion.id] = selectedAnswer
-    }
-    if (currentIndex < questions.length - 1) {
-      playSound('tap')
-      goToQuestion(currentIndex + 1)
-    } else {
+  function advanceToNext() {
+    if (finishedRef.current) return
+    if (currentIndex >= questions.length - 1) {
       finishExam()
-    }
-  }
-
-  function handleSkip() {
-    playSound('swipe')
-    if (currentIndex < questions.length - 1) {
-      goToQuestion(currentIndex + 1)
+    } else {
+      const next = currentIndex + 1
+      setCurrentIndex(next)
+      setAnswered(false)
+      setWrongPick(null)
+      debouncedSave()
     }
   }
 
   function handleSelectAnswer(choice) {
-    playSound('select')
-    setSelectedAnswer(choice)
+    if (answered || finishedRef.current) return
+
+    const isCorrect = choice === currentQuestion.correctAnswer
+
     answersRef.current[currentQuestion.id] = choice
+    setAnswered(true)
+
+    if (isCorrect) {
+      playSound('correct')
+      correctCountRef.current++
+    } else {
+      playSound('wrong')
+      wrongCountRef.current++
+      setWrongPick(choice)
+    }
+
     debouncedSave()
+    advanceTimeoutRef.current = setTimeout(advanceToNext, isCorrect ? 300 : 600)
   }
 
   function handleCountdownComplete() {
@@ -194,15 +202,29 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
   }
 
   function handleExit() {
-    if (!confirm(t('exam.confirmExit'))) return
+    setShowExitDialog(true)
+  }
+
+  function confirmExit() {
+    setShowExitDialog(false)
     if (intervalRef.current) clearInterval(intervalRef.current)
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
     clearExamProgress()
     exitFullscreen()
     onExit()
   }
 
-  const swipeHandlers = useSwipe(handleSkip, null, 60)
+  const swipeHandlers = useSwipe(() => {
+    if (!answered && !finishedRef.current && currentIndex < questions.length - 1) {
+      playSound('swipe')
+      const next = currentIndex + 1
+      setCurrentIndex(next)
+      setAnswered(false)
+      setWrongPick(null)
+      debouncedSave()
+    }
+  }, null, 60)
 
   const currentQuestion = questions[currentIndex]
   const minutes = Math.floor(displaySeconds / 60)
@@ -210,6 +232,7 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
   const isTimeWarning = displaySeconds <= 60
   const isTimeCritical = displaySeconds <= 30
   const questionProgress = ((currentIndex + 1) / questions.length) * 100
+  const labels = ['A', 'B', 'C', 'D']
 
   if (phase === 'countdown') {
     return <CountdownOverlay onComplete={handleCountdownComplete} />
@@ -217,48 +240,48 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
 
   return (
     <div className="h-screen-safe flex flex-col overflow-hidden" {...swipeHandlers}>
-      <div className="no-print shrink-0 flex items-center gap-2 px-3 py-1.5">
-        <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-7 w-auto shrink-0" />
-        <span className="shrink-0 font-bold text-sm text-text">
+      <div className="no-print shrink-0 flex items-center gap-2 md:gap-3 px-3 md:px-5 py-1.5 md:py-3">
+        <img src="/wonderkids_logo.webp" alt="WonderKids" className="h-7 md:h-10 w-auto shrink-0" />
+        <span className="shrink-0 font-bold text-sm md:text-lg text-text">
           {t('levels.level')} {config.level}
         </span>
-        <div className="flex-1 h-2 bg-white rounded-full overflow-hidden shadow-inner">
+        <div className="flex-1 h-2 md:h-3 bg-white rounded-full overflow-hidden shadow-inner">
           <div
             className="h-full rounded-full bg-secondary transition-all duration-300"
             style={{ width: `${questionProgress}%` }}
           />
         </div>
-        <div className={`flex items-center gap-1 font-bold text-lg tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
-          <Clock size={18} />
+        <div className={`flex items-center gap-1 font-bold text-lg md:text-xl tabular-nums ${isTimeCritical ? 'text-red animate-pulse' : isTimeWarning ? 'text-orange' : 'text-text'}`}>
+          <Clock size={18} className="md:!w-6 md:!h-6" />
           {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
         </div>
         <button
           onClick={toggleLang}
-          className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple"
+          className="p-2 md:p-3 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-purple"
         >
-          <Globe size={18} />
+          <Globe size={18} className="md:!w-6 md:!h-6" />
         </button>
         <button
           onClick={() => { toggleFullscreen(); setIsFull(!isFull) }}
-          className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-secondary"
+          className="p-2 md:p-3 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-secondary"
         >
-          {isFull ? <Minimize size={18} /> : <Maximize size={18} />}
+          {isFull ? <Minimize size={18} className="md:!w-6 md:!h-6" /> : <Maximize size={18} className="md:!w-6 md:!h-6" />}
         </button>
         <button
           onClick={handleExit}
-          className="p-2 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-red"
+          className="p-2 md:p-3 rounded-full bg-white/80 shadow-md active:scale-90 transition-transform text-red"
         >
-          <LogOut size={18} />
+          <LogOut size={18} className="md:!w-6 md:!h-6" />
         </button>
       </div>
 
-      <div className="no-print shrink-0 px-3 -mt-0.5 mb-1">
-        <span className="text-sm font-bold text-text-light">
+      <div className="no-print shrink-0 px-3 md:px-5 -mt-0.5 mb-1">
+        <span className="text-sm md:text-base font-bold text-text-light">
           Q{currentIndex + 1}/{questions.length}
         </span>
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-2 sm:p-4 pb-16 sm:pb-18 gap-1">
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-6 sm:px-6 md:px-4 pb-6 -mt-6 sm:-mt-0 gap-1">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.id}
@@ -266,30 +289,42 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
             transition={{ duration: 0.25 }}
-            className="w-full max-w-xl"
+            className="w-full max-w-[17rem] sm:max-w-md md:max-w-lg lg:max-w-xl"
           >
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 lg:p-7 gummy-shadow-lg mb-2 sm:mb-3 text-center">
-              <p className="text-2xl sm:text-3xl lg:text-5xl font-bold text-text leading-snug break-words">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-2 sm:p-4 md:p-5 lg:p-7 gummy-shadow-lg mb-1.5 sm:mb-3 text-center">
+              <p className="text-lg sm:text-2xl md:text-3xl lg:text-5xl font-bold text-text leading-snug break-words">
                 {renderQuestion(lang === 'en' && currentQuestion.questionEn ? currentQuestion.questionEn : currentQuestion.question)}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 gap-1 sm:gap-2 md:gap-3">
               {currentQuestion.choices.map((choice, i) => {
-                const isSelected = selectedAnswer === choice
-                const labels = ['A', 'B', 'C', 'D']
+                const isCorrectChoice = choice === currentQuestion.correctAnswer
+                const isWrong = wrongPick === choice
+                const showCorrect = answered && isCorrectChoice
+                const dimmed = answered && !isCorrectChoice && !isWrong
+
                 return (
                   <motion.button
                     key={`${currentQuestion.id}-${choice}-${i}`}
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={!answered ? { scale: 0.95 } : {}}
+                    animate={isWrong ? { x: [0, -6, 6, -6, 0] } : {}}
+                    transition={{ duration: 0.25 }}
                     onClick={() => handleSelectAnswer(choice)}
-                    className={`relative p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl transition-all gummy-press ${
-                      isSelected
-                        ? 'bg-primary text-white gummy-shadow-lg scale-[1.03]'
-                        : 'bg-white text-text gummy-shadow hover:bg-bg'
+                    disabled={answered}
+                    className={`relative p-2 sm:p-3 md:p-4 lg:p-5 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg md:text-xl lg:text-2xl transition-all ${
+                      showCorrect
+                        ? 'bg-green text-white gummy-shadow-lg scale-[1.03]'
+                        : isWrong
+                          ? 'bg-red text-white'
+                          : dimmed
+                            ? 'bg-white/60 text-text-muted'
+                            : 'bg-white text-text gummy-shadow hover:bg-bg gummy-press'
                     }`}
                   >
-                    <span className={`absolute top-1 left-2 text-[10px] sm:text-xs font-bold ${isSelected ? 'text-white/60' : 'text-text-muted'}`}>
+                    <span className={`absolute top-0.5 left-1.5 text-[9px] sm:text-[10px] md:text-xs font-bold ${
+                      showCorrect || isWrong ? 'text-white/60' : 'text-text-muted'
+                    }`}>
                       {labels[i]}
                     </span>
                     {choice}
@@ -301,32 +336,11 @@ export default function ExamPage({ levelConfig: config, user, onFinish, onExit }
         </AnimatePresence>
       </div>
 
-      <div className="no-print fixed bottom-0 left-0 right-0 z-30 px-3 py-2 sm:py-3 bg-gradient-to-t from-bg via-bg/95 to-transparent pt-6">
-        <div className="w-full flex items-center justify-between max-w-xl mx-auto">
-          <button
-            onClick={() => goToQuestion(currentIndex - 1)}
-            disabled={currentIndex === 0}
-            className="p-2.5 sm:p-3 rounded-full bg-white/80 backdrop-blur-sm text-text-light gummy-shadow disabled:opacity-30 hover:bg-white active:scale-95 transition-all"
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          <p className="text-text-muted text-[10px] sm:text-xs">{t('exam.swipeHint')}</p>
-
-          <motion.button
-            onClick={handleNext}
-            whileTap={{ scale: 0.95 }}
-            className={`flex items-center gap-1 px-5 sm:px-7 py-2.5 sm:py-3 rounded-full text-white font-bold text-base sm:text-lg gummy-shadow gummy-press transition-all ${
-              currentIndex === questions.length - 1
-                ? 'bg-gradient-to-r from-primary to-primary-dark'
-                : 'bg-gradient-to-r from-secondary to-secondary-dark'
-            }`}
-          >
-            {currentIndex === questions.length - 1 ? t('exam.finish') : t('exam.next')}
-            <ChevronRight size={18} />
-          </motion.button>
-        </div>
-      </div>
+      <ExitConfirmDialog
+        open={showExitDialog}
+        onConfirm={confirmExit}
+        onCancel={() => setShowExitDialog(false)}
+      />
     </div>
   )
 }
